@@ -412,7 +412,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4729291d7df43a24280696e2ba5eaf0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseSensitivity: 100
+  mouseSensitivity: 300
   playerBody: {fileID: 1183339815}
 --- !u!114 &963194230
 MonoBehaviour:
@@ -567,7 +567,8 @@ MonoBehaviour:
   deceleration: 20
   jumpHeight: 12
   gravity: -9.81
-  dashSpeed: 25
+  dashSpeed: 20
   dashDuration: 0.15
   playerCamera: {fileID: 963194228}
   cameraBob: {fileID: 963194230}
+  landingDeceleration: 100
