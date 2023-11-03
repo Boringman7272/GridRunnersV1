@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     public float dashDuration = 0.2f;
     private bool isDashing = false;
     private bool hasAirDashed = false;
+    private bool isSprinting = false;
     public Transform playerCamera;
     public CameraBob cameraBob;
 
@@ -88,42 +89,46 @@ public class PlayerMovement : MonoBehaviour
 }
 
 
-    private void HandleGroundedState()
+private void HandleGroundedState()
+{
+    // Toggle sprint when the sprint key is pressed
+    if (Input.GetKeyDown(KeyCode.LeftShift)) {
+        isSprinting = !isSprinting; // Toggle the sprint state
+    }
+
+    // Set target speed based on whether the player is sprinting
+    float targetSpeed = isSprinting ? maxRunSpeed : maxWalkSpeed;
+
+    if (Input.GetButtonDown("Jump"))
     {
-        if (controller.isGrounded)
+        velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        playerState = PlayerState.Jumping;
+        cameraBob.DoJumpBob();
+    }
+    else
+    {
+        Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        Vector3 desiredDirection = playerCamera.TransformDirection(input).normalized;
+        desiredDirection.y = 0;
+
+        velocity.x = Mathf.MoveTowards(velocity.x, desiredDirection.x * targetSpeed, acceleration * Time.deltaTime);
+        velocity.z = Mathf.MoveTowards(velocity.z, desiredDirection.z * targetSpeed, acceleration * Time.deltaTime);
+
+        if (desiredDirection == Vector3.zero)
         {
-            hasAirDashed = false;
-            if (Input.GetButtonDown("Jump"))
-            {
-                velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-                playerState = PlayerState.Jumping;
-                cameraBob.DoJumpBob();
-            }
-            else
-            {
-                float targetSpeed = Input.GetKey(KeyCode.LeftShift) ? maxRunSpeed : maxWalkSpeed;
-                Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-                Vector3 desiredDirection = playerCamera.TransformDirection(input).normalized;
-                desiredDirection.y = 0;
+            velocity.x = Mathf.MoveTowards(velocity.x, 0, deceleration * Time.deltaTime);
+            velocity.z = Mathf.MoveTowards(velocity.z, 0, deceleration * Time.deltaTime);
+        }
 
-                velocity.x = Mathf.MoveTowards(velocity.x, desiredDirection.x * targetSpeed, acceleration * Time.deltaTime);
-                velocity.z = Mathf.MoveTowards(velocity.z, desiredDirection.z * targetSpeed, acceleration * Time.deltaTime);
+        velocity.y += gravity * Time.deltaTime; // Apply gravity
 
-                if (desiredDirection == Vector3.zero)
-                {
-                    velocity.x = Mathf.MoveTowards(velocity.x, 0, deceleration * Time.deltaTime);
-                    velocity.z = Mathf.MoveTowards(velocity.z, 0, deceleration * Time.deltaTime);
-                }
-
-                velocity.y += gravity * Time.deltaTime; // Apply gravity
-
-                if (Input.GetKeyDown(KeyCode.LeftControl) && !isDashing)
-                {
-                    StartCoroutine(Dash(desiredDirection));
-                }
-            }
+        if (Input.GetKeyDown(KeyCode.LeftControl) && !isDashing)
+        {
+            StartCoroutine(Dash(desiredDirection));
         }
     }
+}
+    
 
     private void HandleJumpingState()
     {

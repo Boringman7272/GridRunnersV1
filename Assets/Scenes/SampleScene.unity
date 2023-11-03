@@ -561,13 +561,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6276bdf1e098457439b6edb90bebcf76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  acceleration: 15
+  acceleration: 20
   maxWalkSpeed: 4
-  maxRunSpeed: 7.8
-  deceleration: 25
-  jumpHeight: 10
+  maxRunSpeed: 10
+  deceleration: 20
+  jumpHeight: 12
   gravity: -9.81
-  dashSpeed: 15
-  dashDuration: 0.2
+  dashSpeed: 25
+  dashDuration: 0.15
   playerCamera: {fileID: 963194228}
   cameraBob: {fileID: 963194230}
