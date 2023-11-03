@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
     public float dashSpeed = 15.0f;
     public float dashDuration = 0.2f;
     private bool isDashing = false;
+    private bool hasAirDashed = false;
     public Transform playerCamera;
     public CameraBob cameraBob;
 
@@ -36,6 +37,10 @@ public class PlayerMovement : MonoBehaviour
     // Check if the player is grounded at the start of each frame
     if (controller.isGrounded)
     {
+        if (cameraBob.IsJumping()){
+            cameraBob.SetJumping(false);
+            hasAirDashed = false;
+        }
         if (playerState == PlayerState.Jumping)
         {
             playerState = PlayerState.Grounded;

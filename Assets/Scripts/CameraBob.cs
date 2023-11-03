@@ -73,4 +73,22 @@ public class CameraBob : MonoBehaviour
     {
         return time * time;
     }
+
+    public bool IsJumping()
+{
+    return isJumping;
+}
+
+    public void SetJumping(bool state)
+{
+    isJumping = state;
+    if (state)
+    {
+        DoJumpBob();
+    }
+    else
+    {
+        DoLandBob();
+    }
+}
 }
