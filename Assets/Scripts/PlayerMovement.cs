@@ -37,6 +37,8 @@ public class PlayerMovement : MonoBehaviour
     // Check if the player is grounded at the start of each frame
     if (controller.isGrounded)
     {
+        hasAirDashed = false;
+        
         if (cameraBob.IsJumping()){
             cameraBob.SetJumping(false);
             hasAirDashed = false;
@@ -70,9 +72,19 @@ public class PlayerMovement : MonoBehaviour
     {
         velocity.y += gravity * Time.deltaTime;
     }
-
+    if (Input.GetKeyDown(KeyCode.LeftControl) && !isDashing && (controller.isGrounded || !hasAirDashed)) {
+            Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+            Vector3 dashDirection = playerCamera.TransformDirection(input).normalized;
+            dashDirection.y = 0; // Ensure we don't dash upwards or downwards
+            StartCoroutine(Dash(dashDirection));
+            if (!controller.isGrounded) {
+                hasAirDashed = true;
+            }
+        }
     // Move the player
     controller.Move(velocity * Time.deltaTime);
+
+    
 }
 
 
@@ -80,6 +92,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (controller.isGrounded)
         {
+            hasAirDashed = false;
             if (Input.GetButtonDown("Jump"))
             {
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
@@ -136,7 +149,10 @@ public class PlayerMovement : MonoBehaviour
             controller.Move(direction * dashSpeed * Time.deltaTime);
             yield return null;
         }
-
+        isDashing = false;
+        if (controller.isGrounded) {
+            hasAirDashed = false; // Reset air dash when grounded
+        }
         velocity = direction * maxWalkSpeed; // Reset velocity to walking speed after dashing
         isDashing = false;
         playerState = PlayerState.Grounded; // Assume the player will be on the ground after dashing
