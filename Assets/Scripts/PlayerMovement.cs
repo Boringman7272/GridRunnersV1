@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -16,10 +17,15 @@ public class PlayerMovement : MonoBehaviour
     private bool isDashing = false;
     private bool hasAirDashed = false;
     private bool isSprinting = false;
+    public bool coolDownCheck = true;
     public Transform playerCamera;
     public CameraBob cameraBob;
     private bool justLanded = false;
     public float landingDeceleration = 100.0f; 
+    public float dashCooldown = 2.0f; // Cooldown duration in seconds
+    private float lastDashTime = -Mathf.Infinity; 
+    public GameObject dashReadyPopup;   // Initialize to a negative value so the player can dash immediately
+
 
     private enum PlayerState
     {
@@ -83,19 +89,56 @@ public class PlayerMovement : MonoBehaviour
     {
         velocity.y += gravity * Time.deltaTime;
     }
-    if (Input.GetKeyDown(KeyCode.LeftControl) && !isDashing && (controller.isGrounded || !hasAirDashed)) {
-            Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-            Vector3 dashDirection = playerCamera.TransformDirection(input).normalized;
-            dashDirection.y = 0; // Ensure we don't dash upwards or downwards
-            StartCoroutine(Dash(dashDirection));
-            if (!controller.isGrounded) {
-                hasAirDashed = true;
+    Debug.Log("Current Time: " + Time.time);
+    Debug.Log("Last Dash Time: " + lastDashTime);
+    Debug.Log("Next Dash Available After: " + (lastDashTime + dashCooldown));
+    Debug.Log("Cooldown Check: " + (Time.time >= lastDashTime + dashCooldown));
+
+    DashAction();
+    DashPopup();
+    
+}
+
+private void DashPopup(){
+    
+    if (Time.time >= lastDashTime + dashCooldown)
+        {
+            if (!dashReadyPopup.activeSelf)
+            {
+                dashReadyPopup.SetActive(true); // Show the popup
             }
         }
+    else{
+        if (dashReadyPopup.activeSelf)
+        {
+        dashReadyPopup.SetActive(false);
+        }
+    }
+
+}
+
+
+private void DashAction()
+{
+    if (Input.GetKeyDown(KeyCode.LeftControl) && !isDashing && Time.time >= lastDashTime + dashCooldown && (controller.isGrounded || !hasAirDashed))
+    {
+        bool coolDownCheck = Time.time >= lastDashTime + dashCooldown;
+        Debug.Log("cooldown check inside dashaction" + coolDownCheck);
+        if(coolDownCheck){
+            
+        
+        Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        Vector3 dashDirection = playerCamera.TransformDirection(input).normalized;
+        dashDirection.y = 0; // Ensure we don't dash upwards or downwards
+        StartCoroutine(Dash(dashDirection));
+        if (!controller.isGrounded) {
+            hasAirDashed = true;
+        }
+    }
+    }
     // Move the player
     controller.Move(velocity * Time.deltaTime);
 
-    
 }
 
 
@@ -108,6 +151,7 @@ private void HandleGroundedState()
             // Apply rapid deceleration
             velocity.x = Mathf.MoveTowards(velocity.x, 0, landingDeceleration * Time.deltaTime);
             velocity.z = Mathf.MoveTowards(velocity.z, 0, landingDeceleration * Time.deltaTime);
+            coolDownCheck = true;
             justLanded = false;
         }
     else{
@@ -142,10 +186,6 @@ private void HandleGroundedState()
 
         velocity.y += gravity * Time.deltaTime; // Apply gravity
 
-        if (Input.GetKeyDown(KeyCode.LeftControl) && !isDashing)
-        {
-            StartCoroutine(Dash(desiredDirection));
-        }
     }
 }
 } 
@@ -165,9 +205,19 @@ private void HandleGroundedState()
 
 IEnumerator Dash(Vector3 direction)
 {
+    Debug.Log("Dash coroutine started at: " + Time.time);
+
+    if (isDashing)
+{
+    yield break; // Exit if already dashing
+}
+    Debug.Log("Dash initiated at: " + Time.time);
+    Debug.Log("Next dash available after: " + (lastDashTime + dashCooldown));
     isDashing = true;
     playerState = PlayerState.Dashing;
-    float startTime = Time.time;
+    lastDashTime = Time.time;
+
+    Debug.Log("Dashtime being set " + lastDashTime);
 
     // Store the player's current momentum
     Vector3 currentMomentum = new Vector3(velocity.x, 0, velocity.z);
@@ -178,7 +228,7 @@ IEnumerator Dash(Vector3 direction)
     // Blend the current momentum with the dash force
     Vector3 resultingMomentum = currentMomentum + dashForce;
 
-    while (Time.time < startTime + dashDuration)
+    while (Time.time < lastDashTime + dashDuration)
     {
         // Apply the resulting momentum instead of just the dash direction
         controller.Move(resultingMomentum * Time.deltaTime);
