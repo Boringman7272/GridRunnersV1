@@ -1,17 +1,18 @@
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
     public float acceleration = 15.0f;
-    public float maxWalkSpeed = 4.0f;
-    public float maxRunSpeed = 7.8f;
+    public float maxWalkSpeed = 5f;
+    public float maxRunSpeed = 8.5f;
     public float deceleration = 25.0f;
     private CharacterController controller;
     private Vector3 velocity = Vector3.zero;
     public float jumpHeight = 2.0f;
-    public float gravity = -9.81f;
+    public float gravity = -5.5f;
     public float dashSpeed = 15.0f;
     public float dashDuration = 0.2f;
     private bool isDashing = false;
@@ -25,6 +26,14 @@ public class PlayerMovement : MonoBehaviour
     public float dashCooldown = 2.0f; // Cooldown duration in seconds
     private float lastDashTime = -Mathf.Infinity; 
     public GameObject dashReadyPopup;   // Initialize to a negative value so the player can dash immediately
+    public float airControlFactor = 0.8f;  // Factor to control air maneuverability
+    public float airSpeedFactor = 1.25f;
+    private float jumpChargeTime = 0f;
+    private float maxJumpChargeTime = 1f; // Max charge time of 1 second
+    private float airTime = 4f;
+    private float maxAirAcceleration = 20f;
+    private bool isChargingJump = false;
+    public Slider jumpChargeSlider;
 
 
     private enum PlayerState
@@ -163,12 +172,26 @@ private void HandleGroundedState()
     // Set target speed based on whether the player is sprinting
     float targetSpeed = isSprinting ? maxRunSpeed : maxWalkSpeed;
 
-    if (Input.GetButtonDown("Jump"))
+        if (controller.isGrounded && Input.GetButtonDown("Jump"))
     {
-        velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-        playerState = PlayerState.Jumping;
-        cameraBob.DoJumpBob();
+        isChargingJump = true;
+        jumpChargeTime = 0f;
+        jumpChargeSlider.gameObject.SetActive(true);
     }
+
+    if (isChargingJump && Input.GetButton("Jump"))
+    {
+        jumpChargeTime = Mathf.Min(jumpChargeTime + Time.deltaTime, maxJumpChargeTime);
+        jumpChargeSlider.value = jumpChargeTime / maxJumpChargeTime;
+    }
+
+    if (isChargingJump && Input.GetButtonUp("Jump"))
+    {
+        PerformChargedJump();
+        isChargingJump = false;
+        jumpChargeSlider.gameObject.SetActive(false);
+    }
+
     else
     {
         Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
@@ -192,14 +215,26 @@ private void HandleGroundedState()
 
     private void HandleJumpingState()
     {
-        if (controller.isGrounded)
+        if (!controller.isGrounded)
         {
-            playerState = PlayerState.Grounded;
-            cameraBob.DoLandBob();
+        velocity.y += gravity * Time.deltaTime; // Apply gravity
+        float airAcceleration = Mathf.Min(acceleration * airControlFactor * airTime, maxAirAcceleration);
+        float maxAirSpeed = maxWalkSpeed * airSpeedFactor; // airSpeedFactor < 1
+
+        Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        Vector3 desiredDirection = playerCamera.TransformDirection(input).normalized;
+        desiredDirection.y = 0;
+
+        // Apply air acceleration and limit to max air speed
+        velocity.x = Mathf.Clamp(velocity.x + desiredDirection.x * airAcceleration * Time.deltaTime, -maxAirSpeed, maxAirSpeed);
+        velocity.z = Mathf.Clamp(velocity.z + desiredDirection.z * airAcceleration * Time.deltaTime, -maxAirSpeed, maxAirSpeed);
+    
         }
         else
         {
-            velocity.y += gravity * Time.deltaTime; // Apply gravity
+            
+            playerState = PlayerState.Grounded;
+            cameraBob.DoLandBob();
         }
     }
 
@@ -245,4 +280,14 @@ IEnumerator Dash(Vector3 direction)
     }
     playerState = controller.isGrounded ? PlayerState.Grounded : PlayerState.Jumping;
 }
+private void PerformChargedJump()
+{
+    float jumpForce = Mathf.Sqrt(jumpChargeTime / maxJumpChargeTime * jumpHeight * -2f * gravity);
+        Vector3 horizontalVelocity = new Vector3(velocity.x, 0, velocity.z);
+
+    // Apply jump force while maintaining horizontal momentum
+    velocity = horizontalVelocity + new Vector3(0, jumpForce, 0);
+    // Set player state to jumping if you have such a state
+}
+
 }
