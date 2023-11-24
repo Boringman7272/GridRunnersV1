@@ -30,7 +30,7 @@ namespace CartoonFX
 			public float delay = 0.0f;
 			public float duration = 1.0f;
 			public ShakeSpace shakeSpace = ShakeSpace.Screen;
-			public Vector3 shakeStrength = new Vector3(0.1f, 0.1f, 0.1f);
+			public Vector3 shakeStrength = new Vector3(0.01f, 0.01f, 0.01f);
 			public AnimationCurve shakeCurve = AnimationCurve.Linear(0, 1, 1, 0);
 			[Space]
 			[Range(0, 0.1f)] public float shakesDelay = 0;

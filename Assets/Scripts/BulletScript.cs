@@ -9,10 +9,12 @@ public class BulletScript : MonoBehaviour
     public float speed = 20f;
     public Rigidbody rb;
     public GameObject explosionEffect;
+    public float lifespan = 10f;
 
     void Start()
     {
         rb.velocity = transform.forward * speed;
+        Destroy(gameObject, lifespan);
     }
 
     void OnCollisionEnter(Collision collision)
