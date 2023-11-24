@@ -10,6 +10,7 @@ public class BulletScript : MonoBehaviour
     public Rigidbody rb;
     public GameObject explosionEffect;
     public float lifespan = 10f;
+    public float ARdmg = 26f;
 
     void Start()
     {
@@ -19,7 +20,12 @@ public class BulletScript : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        // Add impact logic here
+            Shootable shootable = collision.collider.GetComponent<Shootable>();
+    if (shootable != null)
+    {
+        // Assuming each bullet does a fixed amount of damage
+        shootable.TakeDamage(ARdmg);
+    }
         GameObject explosion = Instantiate(explosionEffect, transform.position, Quaternion.identity);
         Destroy(explosion, 2f);
         Destroy(gameObject); // Destroy bullet on impact

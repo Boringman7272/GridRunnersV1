@@ -34,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
     private float maxAirAcceleration = 20f;
     private bool isChargingJump = false;
     public Slider jumpChargeSlider;
+    public GameObject dashEffect;
 
 
     private enum PlayerState
@@ -266,6 +267,7 @@ IEnumerator Dash(Vector3 direction)
     while (Time.time < lastDashTime + dashDuration)
     {
         // Apply the resulting momentum instead of just the dash direction
+        GameObject explosion = Instantiate(dashEffect, transform.position, Quaternion.identity);
         controller.Move(resultingMomentum * Time.deltaTime);
         yield return null;
     }

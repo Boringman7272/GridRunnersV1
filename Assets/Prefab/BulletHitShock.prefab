@@ -14804,9 +14804,9 @@ MonoBehaviour:
     useMainCamera: 1
     cameras: []
     delay: 0
-    duration: 0.5
+    duration: 0.3
     shakeSpace: 0
-    shakeStrength: {x: 0.03, y: 0.03, z: 0.1}
+    shakeStrength: {x: 0.005, y: 0.005, z: 0.03}
     shakeCurve:
       serializedVersion: 2
       m_Curve:
