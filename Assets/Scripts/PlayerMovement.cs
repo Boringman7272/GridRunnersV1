@@ -33,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
     private float airTime = 4f;
     private float maxAirAcceleration = 20f;
     private bool isChargingJump = false;
+    public float jumpPadForce = -1f;
     public Slider jumpChargeSlider;
     public GameObject dashEffect;
 
@@ -99,11 +100,11 @@ public class PlayerMovement : MonoBehaviour
     {
         velocity.y += gravity * Time.deltaTime;
     }
-    Debug.Log("Current Time: " + Time.time);
+    /*Debug.Log("Current Time: " + Time.time);
     Debug.Log("Last Dash Time: " + lastDashTime);
     Debug.Log("Next Dash Available After: " + (lastDashTime + dashCooldown));
     Debug.Log("Cooldown Check: " + (Time.time >= lastDashTime + dashCooldown));
-
+    */
     DashAction();
     DashPopup();
     
@@ -111,7 +112,7 @@ public class PlayerMovement : MonoBehaviour
 
 private void DashPopup(){
     
-    if (Time.time >= lastDashTime + dashCooldown)
+    if (Time.time >= lastDashTime + dashCooldown && (controller.isGrounded || !hasAirDashed))
         {
             if (!dashReadyPopup.activeSelf)
             {
@@ -133,13 +134,13 @@ private void DashAction()
     if (Input.GetKeyDown(KeyCode.LeftControl) && !isDashing && Time.time >= lastDashTime + dashCooldown && (controller.isGrounded || !hasAirDashed))
     {
         bool coolDownCheck = Time.time >= lastDashTime + dashCooldown;
-        Debug.Log("cooldown check inside dashaction" + coolDownCheck);
+       // Debug.Log("cooldown check inside dashaction" + coolDownCheck);
         if(coolDownCheck){
             
         
         Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         Vector3 dashDirection = playerCamera.TransformDirection(input).normalized;
-        dashDirection.y = 0; // Ensure we don't dash upwards or downwards
+         // Ensure we don't dash upwards or downwards
         StartCoroutine(Dash(dashDirection));
         if (!controller.isGrounded) {
             hasAirDashed = true;
@@ -241,19 +242,19 @@ private void HandleGroundedState()
 
 IEnumerator Dash(Vector3 direction)
 {
-    Debug.Log("Dash coroutine started at: " + Time.time);
+   // Debug.Log("Dash coroutine started at: " + Time.time);
 
     if (isDashing)
 {
     yield break; // Exit if already dashing
 }
-    Debug.Log("Dash initiated at: " + Time.time);
-    Debug.Log("Next dash available after: " + (lastDashTime + dashCooldown));
+   // Debug.Log("Dash initiated at: " + Time.time);
+   // Debug.Log("Next dash available after: " + (lastDashTime + dashCooldown));
     isDashing = true;
     playerState = PlayerState.Dashing;
     lastDashTime = Time.time;
 
-    Debug.Log("Dashtime being set " + lastDashTime);
+   // Debug.Log("Dashtime being set " + lastDashTime);
 
     // Store the player's current momentum
     Vector3 currentMomentum = new Vector3(velocity.x, 0, velocity.z);
@@ -282,14 +283,46 @@ IEnumerator Dash(Vector3 direction)
     }
     playerState = controller.isGrounded ? PlayerState.Grounded : PlayerState.Jumping;
 }
-private void PerformChargedJump()
-{
-    float jumpForce = Mathf.Sqrt(jumpChargeTime / maxJumpChargeTime * jumpHeight * -2f * gravity);
-        Vector3 horizontalVelocity = new Vector3(velocity.x, 0, velocity.z);
 
+
+
+
+
+
+
+
+private void PerformChargedJump(float customJumpForce = -1f)
+{
+    
+    if (playerState == PlayerState.Grounded)
+    {
+        if(customJumpForce > 0){
+        
+        float jumpForce = Mathf.Sqrt(jumpChargeTime / maxJumpChargeTime * (jumpHeight + customJumpForce)  * -2f * gravity); 
+        velocity = new Vector3(velocity.x, jumpForce, velocity.z);
+        jumpChargeSlider.gameObject.SetActive(false);
+        playerState =PlayerState.Jumping;
+    }
+    else{
+        float jumpForce = Mathf.Sqrt(jumpChargeTime / maxJumpChargeTime * jumpHeight * -2f * gravity);
+        // Maintain the current horizontal velocity and only change the y component
+        velocity = new Vector3(velocity.x, jumpForce, velocity.z);
+        jumpChargeSlider.gameObject.SetActive(false);
+        playerState =PlayerState.Jumping;
+    }
     // Apply jump force while maintaining horizontal momentum
-    velocity = horizontalVelocity + new Vector3(0, jumpForce, 0);
+    
     // Set player state to jumping if you have such a state
 }
+
+}
+
+
+public void InitiateJumpPadJump(float jumpPadForce)
+{
+    // You can modify this to be a special type of jump if needed
+    PerformChargedJump(jumpPadForce); // jumpPadForce would be a predefined force specific to jump pads
+}
+
 
 }
