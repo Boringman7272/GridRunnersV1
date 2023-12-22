@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5310103410108534639}
   - component: {fileID: 3920138597382952695}
   - component: {fileID: 8317201369628982287}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Dash fx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4772,7 +4772,7 @@ GameObject:
   - component: {fileID: 4292233060106844903}
   - component: {fileID: 8657796451770237111}
   - component: {fileID: 5468269814795486747}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Ground ring
   m_TagString: Untagged
   m_Icon: {fileID: 0}

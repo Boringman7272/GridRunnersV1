@@ -16,17 +16,21 @@ public class GunScript : MonoBehaviour
     public GameObject shootEffect;
     public RectTransform reticleUI; 
     public Camera playerCamera;
+    private bool Gunenabled = false;
+
+
 
     void Start()
     {
+        if (Gunenabled == true){
         GunTransform.localRotation = Quaternion.Euler(-90, 0, 0);
         currentAmmo = maxAmmo; // Initialize ammo on start
+    }
     }
 
     void Update()
     {
-
-        Aiming();
+        
         switch (state)
         {
             case GunState.Ready:
@@ -36,12 +40,22 @@ public class GunScript : MonoBehaviour
                 StartCoroutine(Reload());
                 break;
         }
+        
 
-        if (state == GunState.Ready && ShouldReload())
-        {
-            state = GunState.Reloading;
-        }
+            if (state == GunState.Ready && ShouldReload())
+            {
+                state = GunState.Reloading;
+            }
+        
     }
+
+void LateUpdate(){
+
+    if (Gunenabled == true){
+        Aiming();
+        }
+
+}
 
     private void HandleShooting()
     {
@@ -57,26 +71,40 @@ public class GunScript : MonoBehaviour
     }
     void Aiming()
     {
+        int layerMask = (1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("Particles")) | (1 << LayerMask.NameToLayer("UI"));
+        layerMask = ~layerMask; 
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;
         Vector3 targetPoint;
 
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+        {
+            float minDistance = 3f;
+        if (Vector3.Distance(hit.point, GunTransform.position) > minDistance)
         {
             targetPoint = hit.point;
         }
         else
         {
-            // If the ray doesn't hit anything, use a point far away in the direction of the ray
-        targetPoint = ray.GetPoint(1000);
+            targetPoint = ray.GetPoint(1000);
         }
+    }
+    else
+    {
+        targetPoint = ray.GetPoint(1000);
+    }
         
         Debug.DrawLine(playerCamera.transform.position, targetPoint, Color.red);
         GunTransform.LookAt(targetPoint);
         Vector3 targetDirection = targetPoint - GunTransform.position;
+        float rotationSpeed = 5f;
         Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
-        GunTransform.rotation = targetRotation * Quaternion.Euler(-90, 0, 0);
-    }
+        GunTransform.rotation = Quaternion.Slerp(GunTransform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+
+    // Maintain a specific local rotation offset
+        GunTransform.localRotation *= Quaternion.Euler(-90, 0, 0);
+}   
+
     void Shoot()
     {
         // Instantiate bullet at the fire point
@@ -93,4 +121,12 @@ public class GunScript : MonoBehaviour
         currentAmmo = maxAmmo;
         state = GunState.Ready;
     }
+
+
+
+
+    public void EnableGun()
+{
+    Gunenabled = true;
+}
 }

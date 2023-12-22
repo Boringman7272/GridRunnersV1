@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4213514190666637198}
   - component: {fileID: 4213514190666637192}
   - component: {fileID: 4213514190666637199}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4902,7 +4902,7 @@ GameObject:
   - component: {fileID: 4213514191725388182}
   - component: {fileID: 4213514191725388176}
   - component: {fileID: 4213514191725388183}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Arcs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9794,7 +9794,7 @@ GameObject:
   - component: {fileID: 4213514192341667838}
   - component: {fileID: 4213514192341667837}
   - component: {fileID: 8218363331310827163}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BulletHitShock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14950,7 +14950,7 @@ GameObject:
   - component: {fileID: 680024390334235550}
   - component: {fileID: 6392074802371270169}
   - component: {fileID: 34706081473975750}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sparks Delay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19841,7 +19841,7 @@ GameObject:
   - component: {fileID: 5216203117321184312}
   - component: {fileID: 5216203117321184314}
   - component: {fileID: 5216203117321184313}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Arcs smaller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24731,7 +24731,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7505020092821355043}
   - component: {fileID: 4095896632070444619}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Point Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
