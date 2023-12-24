@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Shootable : MonoBehaviour
 {
-    public float health = 100;
+    public float health = 100f;
     public GameObject damageNumberPrefab;  
     public Transform canvasTransform;
     public void TakeDamage(float damage)

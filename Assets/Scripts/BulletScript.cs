@@ -10,7 +10,7 @@ public class BulletScript : MonoBehaviour
     public Rigidbody rb;
     public GameObject explosionEffect;
     public float lifespan = 10f;
-    public float ARdmg = 26f;
+    public float ARbulletdmg = 26f;
 
     void Start()
     {
@@ -24,7 +24,7 @@ public class BulletScript : MonoBehaviour
     if (shootable != null)
     {
         // Assuming each bullet does a fixed amount of damage
-        shootable.TakeDamage(ARdmg);
+        shootable.TakeDamage(ARbulletdmg);
     }
         GameObject explosion = Instantiate(explosionEffect, transform.position, Quaternion.identity);
         Destroy(explosion, 2f);
