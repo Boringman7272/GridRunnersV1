@@ -11,12 +11,19 @@ public class Shootable : MonoBehaviour
     public void TakeDamage(float damage)
     {
         health -= damage;
-        if (health <= 0)
-        {
-            Die();
-        }
+       
 
         ShowDamageNumber(damage);
+        ExplodingBarrel explodingBarrel = GetComponent<ExplodingBarrel>();
+        if (explodingBarrel != null && health <= 0)
+        {
+            explodingBarrel.Explode(); // Call Explode method if it's an exploding barrel
+        }
+        else if (health <= 0)
+        {
+            Die(); // Normal death for non-exploding objects
+        }
+
     }
 
     private void Die()
