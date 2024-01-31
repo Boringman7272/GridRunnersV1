@@ -392,7 +392,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 127eaa477c79d5b4c9a7fd9435877ce8, type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 127eaa477c79d5b4c9a7fd9435877ce8, type: 3}
       propertyPath: m_LocalScale.x
@@ -525,12 +525,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1387782212}
     - target: {fileID: 306339806, guid: 7856bcc626704cb44a10379f64d6a534, type: 3}
+      propertyPath: ammoDisplay
+      value: 
+      objectReference: {fileID: 741226187}
+    - target: {fileID: 306339806, guid: 7856bcc626704cb44a10379f64d6a534, type: 3}
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 963194227}
     - target: {fileID: 2795909007664078611, guid: 7856bcc626704cb44a10379f64d6a534, type: 3}
       propertyPath: m_Name
       value: Assault Rifle 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2795909007664078611, guid: 7856bcc626704cb44a10379f64d6a534, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2795909007664366387, guid: 7856bcc626704cb44a10379f64d6a534, type: 3}
       propertyPath: m_RootOrder
@@ -1688,7 +1696,6 @@ MonoBehaviour:
   maxAmmo: 20
   reloadTime: 2
   Gunenabled: 0
-  ammoDisplay: {fileID: 0}
   GunTransform: {fileID: 893455054}
   shootEffect: {fileID: 6770283199212351534, guid: f2b7678061c0ee343b1cd923d38546b6, type: 3}
   reticleUI: {fileID: 1387782212}
@@ -2540,6 +2547,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponSocket: {fileID: 469840211}
+  ammoDisplay: {fileID: 741226187}
 --- !u!1 &1277195419
 GameObject:
   m_ObjectHideFlags: 0
@@ -2712,9 +2720,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: shotgun (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6241795160944265537, guid: fdb77a152f9bd4f48b3514121b4cb939, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6761203816531858427, guid: fdb77a152f9bd4f48b3514121b4cb939, type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 6761203816531858427, guid: fdb77a152f9bd4f48b3514121b4cb939, type: 3}
       propertyPath: m_LocalScale.x
@@ -2768,7 +2780,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 90
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2352587388514463503, guid: fdb77a152f9bd4f48b3514121b4cb939, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: fdb77a152f9bd4f48b3514121b4cb939, type: 3}
 --- !u!1 &1387782211
 GameObject:

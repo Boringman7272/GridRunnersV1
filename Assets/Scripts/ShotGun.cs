@@ -7,14 +7,16 @@ public class ShotGun : Gun
     public GameObject shootEffect;
     public RectTransform reticleUI;
     public Camera playerCamera;
+
+    private Coroutine reloadCoroutine;
     
     //private bool gunEnabled = false;
 
     protected override void Start()
     {
+        maxAmmo = 8;
         base.Start();
         GunTransform.localRotation = Quaternion.Euler(180, 0, 270);
-        maxAmmo = 8;
     }
 
     protected override void Update()
@@ -25,14 +27,19 @@ public class ShotGun : Gun
                 HandleShooting();
                 break;
             case GunState.Reloading:
-                StartCoroutine(Reload());
+                reloadCoroutine = StartCoroutine(Reload());
                 break;
         }
         
 
             if (state == GunState.Ready && ShouldReload())
             {
-                state = GunState.Reloading;
+                if (reloadCoroutine != null)
+            {
+                StopCoroutine(reloadCoroutine); // Stop any existing reload coroutine
+            }
+        
+            state = GunState.Reloading;
             }
     }
 
@@ -49,6 +56,7 @@ public class ShotGun : Gun
         if (Input.GetButtonDown("Fire1") && currentAmmo > 0)
         {
             Shoot();
+            UpdateAmmoDisplay();
         }
     }
 
@@ -89,6 +97,7 @@ public class ShotGun : Gun
 
     // Decrease ammo count
     currentAmmo--;
+    UpdateAmmoDisplay();
     }
 
     void Aiming()

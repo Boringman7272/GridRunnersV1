@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 5178458701946718794}
   - component: {fileID: 5178458701945751690}
   - component: {fileID: 5178458701940532618}
-  - component: {fileID: 5178458701947916518}
   m_Layer: 0
   m_Name: Assault Rifle
   m_TagString: Untagged
@@ -106,26 +105,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &5178458701947916518
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5178458701947950666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6687eba4309b7554eac635a758af76cd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  firePoint: {fileID: 5178458702132098378}
-  GunTransform: {fileID: 5178458701948045930}
-  bulletPrefab: {fileID: 3853362718985885307, guid: 18aa6727a8ef451459d74ec943a85519, type: 3}
-  maxAmmo: 20
-  reloadTime: 2
-  shootEffect: {fileID: 6770283199212351534, guid: f2b7678061c0ee343b1cd923d38546b6, type: 3}
-  reticleUI: {fileID: 0}
-  playerCamera: {fileID: 0}
 --- !u!1 &5178458702132098381
 GameObject:
   m_ObjectHideFlags: 0
