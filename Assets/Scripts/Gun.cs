@@ -16,7 +16,7 @@ public abstract class Gun : MonoBehaviour
     protected enum GunState { Ready, Reloading }
     protected GunState state = GunState.Ready;
     public bool Gunenabled = false;
-    public static TextMeshProUGUI ammoDisplay;
+    public TextMeshProUGUI ammoDisplay;
 
     protected virtual void Start()
     {
@@ -34,9 +34,9 @@ public abstract class Gun : MonoBehaviour
             UpdateAmmoDisplay(); 
         }
 
-        if (state == GunState.Ready && ShouldReload())
+        if (state == GunState.Ready && ShouldReload() && isReloading == false)
         {
-            
+            isReloading = true;
             StartCoroutine(Reload());
             state = GunState.Reloading;
         }
@@ -58,10 +58,15 @@ public abstract class Gun : MonoBehaviour
 
     protected IEnumerator Reload()
     {
-        yield return new WaitForSeconds(reloadTime);
-        currentAmmo = maxAmmo;
-        state = GunState.Ready;
-        ammoDisplay.text = "Reloading";
+        if(isReloading == false)
+        {
+                ammoDisplay.text = "Reloading";
+            yield return new WaitForSeconds(reloadTime);
+            currentAmmo = maxAmmo;
+            state = GunState.Ready;
+            UpdateAmmoDisplay();
+            isReloading = false;
+        }
     }
     protected void UpdateAmmoDisplay()
     {
@@ -87,7 +92,7 @@ public abstract class Gun : MonoBehaviour
     public void ActivateGun(TextMeshProUGUI uiElement)
     {
         // Assign the UI Text element to this gun
-        ammoDisplay = uiElement;
+        this.ammoDisplay = uiElement;
 
         // Enable the gun mechanics
         EnableGun();
