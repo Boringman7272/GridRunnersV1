@@ -31,7 +31,7 @@ public class PlayerInventory : MonoBehaviour
         currentGun = gun;
 
         // You may want to disable the gun script until it's equipped
-        GunScript gunScript = gun.GetComponent<GunScript>();
+        Gun gunScript = gun.GetComponent<Gun>();
         if (gunScript != null)
         {
             gunScript.EnableGun();

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8595446296966789107}
   - component: {fileID: 5512340266234771687}
   - component: {fileID: -7455781988158692690}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -115,7 +115,7 @@ MonoBehaviour:
   rb: {fileID: -7455781988158692690}
   explosionEffect: {fileID: 4213514192341667836, guid: 59ca63d937245eb4bb52c0aec34288eb, type: 3}
   lifespan: 10
-  ARdmg: 26
+  ARbulletdmg: 26
 --- !u!54 &-7455781988158692690
 Rigidbody:
   m_ObjectHideFlags: 0
