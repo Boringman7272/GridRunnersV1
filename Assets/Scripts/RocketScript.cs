@@ -16,6 +16,7 @@ public class RocketScript : MonoBehaviour
     public float explosionRadius = 5f;
     public Transform rocketTrail;
     private bool hasExploded = false;
+    public Material redMaterial;
 
     void Start()
     {
@@ -52,30 +53,44 @@ public class RocketScript : MonoBehaviour
     }
 
     public void Explode()
-    {
+{
         if (hasExploded)
-            return;
+        return;
 
         hasExploded = true;
-        Instantiate(explosionEffect, transform.position, Quaternion.identity);
+        Instantiate(explosionEffect, transform.position - new Vector3(1, 1, 1), Quaternion.identity);
 
-        // Find all colliders within the explosion radius
+        // Visualize the explosion radius
+        GameObject explosionRadiusIndicator = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        explosionRadiusIndicator.transform.position = transform.position;
+        explosionRadiusIndicator.transform.localScale = new Vector3(explosionRadius * 2, explosionRadius * 2, explosionRadius * 2); // The radius is halved because the scale is diameter
+        Destroy(explosionRadiusIndicator.GetComponent<Collider>()); // Remove the collider so it doesn't interfere with physics
+
+        // Apply red material 
+        redMaterial.color = Color.red;
+        explosionRadiusIndicator.GetComponent<Renderer>().material = redMaterial;
+
+    // Destroy the indicator after a short duration
+        Destroy(explosionRadiusIndicator, 0.1f); // Adjust duration as needed
+
+    // Explosion force and damage logic
         Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius);
         foreach (var collider in colliders)
         {
-            // Apply force if the object has a Rigidbody
             Rigidbody rb = collider.GetComponent<Rigidbody>();
             if (rb != null)
             {
                 rb.AddExplosionForce(explosionForce, transform.position, explosionRadius);
             }
-        Shootable shootable = collider.GetComponent<Shootable>();
+
+            Shootable shootable = collider.GetComponent<Shootable>();
             if (shootable != null)
             {
                 shootable.TakeDamage(rocketDamage);
             }
+        }
 
-        Destroy(gameObject);
-    }
+    Destroy(gameObject);
+
 }
 }

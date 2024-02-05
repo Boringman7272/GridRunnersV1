@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 4970829473416735237}
   - component: {fileID: 1467676351898705847}
   - component: {fileID: 5938900150015763435}
-  - component: {fileID: 4371146869062231426}
   - component: {fileID: -7374435709864704432}
   m_Layer: 0
   m_Name: rocket
@@ -104,13 +103,14 @@ MonoBehaviour:
   maxSpeed: 100
   acceleration: 5
   rb: {fileID: 5938900150015763435}
-  explosionEffect: {fileID: 4593184484909914552, guid: 2e1e9506f5904a64b81744324fb7cd50, type: 3}
+  explosionEffect: {fileID: 7904648201882189945, guid: 80bf12f5281f15c4fa900d475b32b7f9, type: 3}
   rocketTrailEffect: {fileID: 5322482516583575462, guid: 6d704fc1bcac3f847b40aa1f78e9800d, type: 3}
   lifespan: 10
   explosionForce: 500
   rocketDamage: 50
-  explosionRadius: 10
+  explosionRadius: 5
   rocketTrail: {fileID: 1597336374437393069}
+  redMaterial: {fileID: 2100000, guid: 4904e7a591bbf6a4798bb5e671fc3966, type: 2}
 --- !u!54 &5938900150015763435
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -127,19 +127,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 2
---- !u!135 &4371146869062231426
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6916142964328909776}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 1.1043702
-  m_Center: {x: -0.010387895, y: 0.0009881598, z: 0.62187576}
 --- !u!65 &-7374435709864704432
 BoxCollider:
   m_ObjectHideFlags: 0
