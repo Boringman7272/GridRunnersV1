@@ -51,27 +51,6 @@ public class RocketScript : MonoBehaviour
         Destroy(gameObject); // Destroy rocket on impact
     }
 
-    // void OnCollisionEnter(Collision collision)
-    // {
-    //     // Area effect damage
-    //     Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius);
-    //     foreach (Collider hit in colliders)
-    //     {
-    //         Shootable shootable = hit.GetComponent<Shootable>();
-    //         if (shootable != null)
-    //         {
-    //             // Damage calculation can consider distance from explosion
-    //             float distance = Vector3.Distance(hit.transform.position, transform.position);
-    //             float damage = Mathf.Max(0, rocketDamage - (distance / explosionRadius) * rocketDamage);
-    //             shootable.TakeDamage(damage);
-    //         }
-    //     }
-
-    //     // Explosion effect
-    //     GameObject explosion = Instantiate(explosionEffect, transform.position, Quaternion.identity);
-    //     Destroy(explosion, 2f); // Cleanup explosion effect after some time
-    //     Destroy(gameObject); // Destroy rocket on impact
-    // }
     public void Explode()
     {
         if (hasExploded)
