@@ -1,36 +1,22 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class GunScript : MonoBehaviour
+public class RocketLauncher : Gun
 {
-    public Transform firePoint; // The point from which bullets are fired
     public Transform GunTransform;
-    public GameObject bulletPrefab; // The bullet prefab
-    public int maxAmmo = 20;
-    private int currentAmmo;
-    public float reloadTime = 2f;
-    private bool isReloading = false;
-    private enum GunState { Ready, Reloading }
-    private GunState state = GunState.Ready;
     public GameObject shootEffect;
-    public RectTransform reticleUI; 
+    public RectTransform reticleUI;
     public Camera playerCamera;
-    private bool Gunenabled = false;
+    //private bool gunEnabled = false;
 
-
-
-    void Start()
+    protected override void Start()
     {
-        if (Gunenabled == true){
+        base.Start();
         GunTransform.localRotation = Quaternion.Euler(-90, 0, 0);
-        currentAmmo = maxAmmo; // Initialize ammo on start
-    }
     }
 
-    void Update()
+    protected override void Update()
     {
-        
         switch (state)
         {
             case GunState.Ready:
@@ -46,29 +32,30 @@ public class GunScript : MonoBehaviour
             {
                 state = GunState.Reloading;
             }
-        
     }
 
-void LateUpdate(){
-
-    if (Gunenabled == true){
+    void LateUpdate()
+    {
+        if (Gunenabled)
+        {
         Aiming();
         }
+    }
 
-}
-
-    private void HandleShooting()
+    protected override void HandleShooting()
     {
-        if (Input.GetButtonDown("Fire1") && currentAmmo > 0)
+        if (Input.GetButtonDown("Fire1") && currentAmmo > 0 && !isReloading)
         {
             Shoot();
         }
     }
-
-    private bool ShouldReload()
+    protected override void Shoot()
     {
-        return currentAmmo <= 0 || Input.GetKeyDown(KeyCode.R);
+        base.Shoot();
+        GameObject explosion = Instantiate(shootEffect, firePoint.position, Quaternion.identity);
+        Destroy(explosion, 1f);
     }
+
     void Aiming()
     {
         int layerMask = (1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("Particles")) | (1 << LayerMask.NameToLayer("UI"));
@@ -103,30 +90,5 @@ void LateUpdate(){
 
     // Maintain a specific local rotation offset
         GunTransform.localRotation *= Quaternion.Euler(-90, 0, 0);
-}   
-
-    void Shoot()
-    {
-        // Instantiate bullet at the fire point
-        GameObject explosion = Instantiate(shootEffect, firePoint.position, Quaternion.identity);
-        Destroy(explosion, 1f);
-        Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-        currentAmmo--;
-    }
-
-    IEnumerator Reload()
-    {
-        state = GunState.Reloading;
-        yield return new WaitForSeconds(reloadTime);
-        currentAmmo = maxAmmo;
-        state = GunState.Ready;
-    }
-
-
-
-
-    public void EnableGun()
-{
-    Gunenabled = true;
 }
 }
