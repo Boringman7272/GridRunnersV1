@@ -1,22 +1,26 @@
 using System.Collections;
 using UnityEngine;
 
-public class ShotGun : Gun
+public class SniperGun : Gun
 {
     public Transform GunTransform;
     public GameObject shootEffect;
+    
+    public GameObject hitEffect; // Effect to show where the ray hits
     public RectTransform reticleUI;
     public Camera playerCamera;
-
-    private Coroutine reloadCoroutine;
-    
+    public LayerMask hitLayers;
+    public float sniperDamage = 120f;
+    public float shotCooldown = 1.2f;
+    private bool canShoot = true;
     //private bool gunEnabled = false;
-
+    private Coroutine reloadCoroutine;
+    [SerializeField] private LineRenderer lineRenderer;
     protected override void Start()
     {
-        maxAmmo = 8;
+        maxAmmo = 4;
         base.Start();
-        GunTransform.localRotation = Quaternion.Euler(180, 0, 270);
+        GunTransform.localRotation = Quaternion.Euler(-90, 0, 0);
     }
 
     protected override void Update()
@@ -56,51 +60,54 @@ public class ShotGun : Gun
 
     protected override void HandleShooting()
     {
-        if (Input.GetButtonDown("Fire1") && currentAmmo > 0)
+        if (Input.GetButtonDown("Fire1") && currentAmmo > 0 && canShoot && !isReloading)
         {
             Shoot();
             UpdateAmmoDisplay();
+            StartCoroutine(ShootCooldown());
+            
         }
     }
 
     protected override void Shoot()
     {
-        //base.Shoot();
+        Vector3 rayStart = playerCamera.transform.position + playerCamera.transform.forward * 0.3f;
+        RaycastHit hit;
+        
 
-    int pelletsCount = 10; // Number of pellets in a shotgun blast
-    float spreadAngle = 4f;
-    float horizspreadAngle = 1.5f; // Max angle variation for the spread
-    float bulletSpeed = 20f; // Speed at which each pellet moves
-    float bulletLifeTime = 3f; // How long the bullet exists before being destroyed
-
-    for (int i = 0; i < pelletsCount; i++)
-    {
-        // Create a rotation with a random spread based on the spreadAngle
-        float spreadX = Random.Range(-horizspreadAngle, horizspreadAngle);
-        float spreadY = Random.Range(-spreadAngle, spreadAngle);
-        Quaternion pelletRotation = Quaternion.Euler(firePoint.eulerAngles.x + spreadX, firePoint.eulerAngles.y + spreadY, 0);
-
-        // Instantiate the bullet
-        GameObject pellet = Instantiate(bulletPrefab, firePoint.position, pelletRotation);
-
-        // If your bullet has a Rigidbody component, you can use it to set the velocity
-        Rigidbody rb = pellet.GetComponent<Rigidbody>();
-        if (rb != null)
+         if (shootEffect != null)
         {
-            rb.velocity = pellet.transform.forward * bulletSpeed;
+            Instantiate(shootEffect, firePoint.position, Quaternion.identity);
         }
 
-        // Optionally, destroy the bullet after some time to simulate limited range
-        Destroy(pellet, bulletLifeTime);
-    }
+        // Perform raycast from the center of the camera view
+         // Adjust 0.1f as needed
+        
+        if (Physics.Raycast(rayStart, playerCamera.transform.forward, out hit, Mathf.Infinity, hitLayers))
+        {
+            StartCoroutine(ShowRaycastLine(firePoint.position, hit.point));
 
-    // Instantiate the shoot effect (muzzle flash, smoke, etc.)
-    GameObject explosion = Instantiate(shootEffect, firePoint.position, Quaternion.identity);
-    Destroy(explosion, 1f);
+            // Optionally, show hit effect at the point of impact
+            if (hitEffect != null)
+            {
+                Instantiate(hitEffect, hit.point, Quaternion.LookRotation(hit.normal));
+            }
 
-    // Decrease ammo count
-    currentAmmo--;
-    UpdateAmmoDisplay();
+            // Deal damage if the hit object can take damage
+            Shootable shootable = hit.collider.GetComponent<Shootable>();
+            if (shootable != null)
+            {
+                shootable.TakeDamage(sniperDamage);
+            }
+            else
+            {
+                 StartCoroutine(ShowRaycastLine(firePoint.position, rayStart + playerCamera.transform.forward * 100f)); // Adjust the max distance as needed
+            }
+        }
+
+        currentAmmo--;
+        UpdateAmmoDisplay();
+    
     }
 
     void Aiming()
@@ -128,7 +135,7 @@ public class ShotGun : Gun
         targetPoint = ray.GetPoint(1000);
     }
         
-        Debug.DrawLine(playerCamera.transform.position, targetPoint, Color.red);
+        //Debug.DrawLine(playerCamera.transform.position, targetPoint, Color.red);
         GunTransform.LookAt(targetPoint);
         Vector3 targetDirection = targetPoint - GunTransform.position;
         float rotationSpeed = 5f;
@@ -136,7 +143,28 @@ public class ShotGun : Gun
         GunTransform.rotation = Quaternion.Slerp(GunTransform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
     // Maintain a specific local rotation offset
-        GunTransform.localRotation *= Quaternion.Euler(180, 0, 270);
+        GunTransform.localRotation *= Quaternion.Euler(-90, 0, 0);
 }   
 
+
+IEnumerator ShootCooldown()
+    {
+        canShoot = false;
+        yield return new WaitForSeconds(shotCooldown);
+        canShoot = true;
+    }
+
+
+IEnumerator ShowRaycastLine(Vector3 start, Vector3 end)
+{
+    lineRenderer.SetPosition(0, start);
+    lineRenderer.SetPosition(1, end);
+    lineRenderer.enabled = true;
+
+    yield return new WaitForSeconds(0.02f); // How long the line is visible
+
+    lineRenderer.enabled = false;
 }
+}
+
+

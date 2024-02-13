@@ -30,15 +30,24 @@ public abstract class Gun : MonoBehaviour
     {
         if (state == GunState.Ready)
         {
-            HandleShooting();
+            Debug.Log("Gun Is Ready");
             UpdateAmmoDisplay(); 
+            if (!isReloading) // Add this check to prevent shooting while reloading
+        {
+            HandleShooting();
+        }
+            
         }
 
         if (state == GunState.Ready && ShouldReload() && isReloading == false)
         {
-            isReloading = true;
-            StartCoroutine(Reload());
+            Debug.Log("Reloading Coroutine called");
             state = GunState.Reloading;
+            if(isReloading == false){
+                StartCoroutine(Reload());
+            }
+            isReloading = true;
+            
         }
     }
 
@@ -58,16 +67,22 @@ public abstract class Gun : MonoBehaviour
 
     protected IEnumerator Reload()
     {
-        if(isReloading == false)
-        {
-                ammoDisplay.text = "Reloading";
-            yield return new WaitForSeconds(reloadTime);
-            currentAmmo = maxAmmo;
-            state = GunState.Ready;
-            UpdateAmmoDisplay();
-            isReloading = false;
-        }
-    }
+        if (isReloading) // Early exit if already reloading
+            yield break;
+
+        Debug.Log("Started Coroutine");
+        isReloading = true; // Set isReloading to true at the start of the coroutine
+        state = GunState.Reloading; // Ensure state is set to Reloading here to prevent re-entry
+        ammoDisplay.text = "Reloading";
+    
+        yield return new WaitForSeconds(reloadTime);
+    
+        currentAmmo = maxAmmo;
+        UpdateAmmoDisplay();
+        state = GunState.Ready; // Reset state back to Ready
+        isReloading = false; // Reset isReloading flag
+        Debug.Log("Finished Reloading");
+}
     protected void UpdateAmmoDisplay()
     {
         if (ammoDisplay != null) // Check if the text component is assigned and the gun is ready
