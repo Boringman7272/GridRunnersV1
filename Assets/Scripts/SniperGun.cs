@@ -28,7 +28,10 @@ public class SniperGun : Gun
         switch (state)
         {
             case GunState.Ready:
+                if (!isReloading) // Add this check to prevent shooting while reloading
+                {
                 HandleShooting();
+                }
                 break;
             case GunState.Reloading:
                 reloadCoroutine = StartCoroutine(Reload());
