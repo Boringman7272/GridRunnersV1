@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class FloatingEnemy : MonoBehaviour
@@ -12,6 +13,8 @@ public class FloatingEnemy : MonoBehaviour
     private Vector3 wanderPoint;
     public float impactForce = 10f; // The force applied to the player on impact
     public int damage = 10;
+    public float dashForce = 20f; // The force applied during a dash
+    private bool isDashing = false; // To track if the enemy is currently dashing
 
 
     void Start()
@@ -19,60 +22,55 @@ public class FloatingEnemy : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
         ChooseNewWanderPoint();
+        StartCoroutine(DashTimer());
+        
     }
 
     void FixedUpdate()
-{
-    // Check for ground and apply floating force if needed
-    if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, desiredFloatingHeight + 0.1f)) // Slightly longer than the desired height
     {
-        float heightAboveGround = hit.distance;
-        if (heightAboveGround < desiredFloatingHeight)
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, desiredFloatingHeight + 0.1f))
         {
-            float forceStrength = floatStrength * (1f - heightAboveGround / desiredFloatingHeight);
-            rb.AddForce(Vector3.up * forceStrength);
+            float heightAboveGround = hit.distance;
+            if (heightAboveGround < desiredFloatingHeight)
+            {
+                float forceStrength = floatStrength * (1f - heightAboveGround / desiredFloatingHeight);
+                rb.AddForce(Vector3.up * forceStrength);
+            }
         }
-    }
 
-    // Determine movement: wander, chase player, or attack downwards based on player's position
-    Vector3 targetPoint;
-    float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        Vector3 targetPoint = wanderPoint; // Default to wander point
 
-    if (distanceToPlayer <= detectionRange)
-    {
-        // Check if player is directly below
-        if (IsPlayerDirectlyBelow())
+        if (!isDashing) // Only decide new movement if not currently dashing
         {
-            // Initiate downward attack movement
-            targetPoint = new Vector3(player.position.x, transform.position.y - desiredFloatingHeight, player.position.z);
-            MoveTowards(targetPoint, true); // True indicates this is an attack move
-        }
-        else
-        {
-            // Normal chase behavior
-            targetPoint = player.position;
-            MoveTowards(targetPoint, false);
-        }
-    }
-    else
-    {
-        // Wander behavior
-        targetPoint = wanderPoint;
-        MoveTowards(targetPoint, false);
-    }
+            if (distanceToPlayer <= detectionRange)
+            {
+                if (IsPlayerDirectlyBelow())
+                {
+                    targetPoint = new Vector3(player.position.x, transform.position.y - desiredFloatingHeight, player.position.z);
+                }
+                else
+                {
+                    targetPoint = player.position;
+                }
+            }
 
-    // Choose new wander point if close to the current one
-    if (Vector3.Distance(transform.position, wanderPoint) < 1f)
-    {
-        ChooseNewWanderPoint();
-    }
+            MoveTowards(targetPoint, IsPlayerDirectlyBelow());
+        }
+
+        if (distanceToPlayer > detectionRange || Vector3.Distance(transform.position, wanderPoint) < 1f)
+        {
+            ChooseNewWanderPoint();
+        }
 }
 
 
    void MoveTowards(Vector3 target, bool isAttacking)
 {
     Vector3 directionToTarget = (target - transform.position).normalized;
-
+if (!isDashing) // Only move normally if not in a dash
+        {
+            directionToTarget = (target - transform.position).normalized;
     if (isAttacking)
     {
         // For an attacking move, consider both horizontal and vertical components
@@ -86,7 +84,7 @@ public class FloatingEnemy : MonoBehaviour
         directionToTarget.y = 0; // Ignore vertical component for normal movement
         rb.MovePosition(rb.position + directionToTarget * moveSpeed * Time.fixedDeltaTime);
     }
-
+    }
     // Rotate to face the target direction
     Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
     rb.MoveRotation(Quaternion.RotateTowards(transform.rotation, targetRotation, 180f * Time.fixedDeltaTime));
@@ -130,5 +128,32 @@ public class FloatingEnemy : MonoBehaviour
             // Optional: Destroy or disable the enemy upon impact
             // Destroy(gameObject); // Uncomment to destroy the enemy on impact
         }
+    }
+    IEnumerator DashTimer()
+    {
+        Debug.Log("starting dash timer");
+        while (true)
+        {
+            yield return new WaitForSeconds(Random.Range(3f, 8f)); // Wait for a random time between 3-8 seconds
+
+            if (Vector3.Distance(transform.position, player.position) <= detectionRange && !IsPlayerDirectlyBelow())
+            {
+                // Perform dash
+                StartCoroutine(PerformDash());
+            }
+        }
+    }
+
+    IEnumerator PerformDash()
+    {
+        Debug.Log("starting dash");
+        isDashing = true; // Indicate the enemy is currently dashing
+
+        Vector3 directionToPlayer = (player.position - transform.position).normalized;
+        rb.AddForce(directionToPlayer * dashForce, ForceMode.Impulse); // Apply an impulse force towards the player
+
+        yield return new WaitForSeconds(0.5f); // Duration of the dash effect
+
+        isDashing = false; // Reset dashing state
     }
 }
