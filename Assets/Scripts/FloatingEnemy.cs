@@ -22,40 +22,82 @@ public class FloatingEnemy : MonoBehaviour
     }
 
     void FixedUpdate()
-    {
-        // Check for ground and apply floating force if needed
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, desiredFloatingHeight + 0.1f)) // Slightly longer than the desired height
 {
+    // Check for ground and apply floating force if needed
+    if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, desiredFloatingHeight + 0.1f)) // Slightly longer than the desired height
+    {
         float heightAboveGround = hit.distance;
         if (heightAboveGround < desiredFloatingHeight)
         {
             float forceStrength = floatStrength * (1f - heightAboveGround / desiredFloatingHeight);
             rb.AddForce(Vector3.up * forceStrength);
         }
-}
+    }
 
-        // Determine movement: wander or chase player based on detection range
-        Vector3 targetPoint = Vector3.Distance(transform.position, player.position) <= detectionRange ? player.position : wanderPoint;
-        MoveTowards(targetPoint);
+    // Determine movement: wander, chase player, or attack downwards based on player's position
+    Vector3 targetPoint;
+    float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-        // Choose new wander point if close to the current one
-        if (Vector3.Distance(transform.position, wanderPoint) < 1f)
+    if (distanceToPlayer <= detectionRange)
+    {
+        // Check if player is directly below
+        if (IsPlayerDirectlyBelow())
         {
-            ChooseNewWanderPoint();
+            // Initiate downward attack movement
+            targetPoint = new Vector3(player.position.x, transform.position.y - desiredFloatingHeight, player.position.z);
+            MoveTowards(targetPoint, true); // True indicates this is an attack move
+        }
+        else
+        {
+            // Normal chase behavior
+            targetPoint = player.position;
+            MoveTowards(targetPoint, false);
         }
     }
-
-    void MoveTowards(Vector3 target)
+    else
     {
-        Vector3 directionToTarget = (target - transform.position).normalized;
-        rb.MovePosition(rb.position + directionToTarget * moveSpeed * Time.fixedDeltaTime);
-
-        // Rotate to face the target (optional)
-        Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
-        rb.MoveRotation(Quaternion.RotateTowards(transform.rotation, targetRotation, 180f * Time.fixedDeltaTime));
-
-
+        // Wander behavior
+        targetPoint = wanderPoint;
+        MoveTowards(targetPoint, false);
     }
+
+    // Choose new wander point if close to the current one
+    if (Vector3.Distance(transform.position, wanderPoint) < 1f)
+    {
+        ChooseNewWanderPoint();
+    }
+}
+
+
+   void MoveTowards(Vector3 target, bool isAttacking)
+{
+    Vector3 directionToTarget = (target - transform.position).normalized;
+
+    if (isAttacking)
+    {
+        // For an attacking move, consider both horizontal and vertical components
+        // This allows the enemy to "dive" towards the player from an angle
+        directionToTarget.y -= 0.5f; // Adjust this value to control the steepness of the attack angle
+        rb.velocity = directionToTarget * moveSpeed * 2f; // Increase speed during attack
+    }
+    else
+    {
+        // For normal movement, maintain the desired floating height
+        directionToTarget.y = 0; // Ignore vertical component for normal movement
+        rb.MovePosition(rb.position + directionToTarget * moveSpeed * Time.fixedDeltaTime);
+    }
+
+    // Rotate to face the target direction
+    Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+    rb.MoveRotation(Quaternion.RotateTowards(transform.rotation, targetRotation, 180f * Time.fixedDeltaTime));
+}
+
+
+    bool IsPlayerDirectlyBelow()
+{
+    Vector3 toPlayer = (player.position - transform.position).normalized;
+    return Vector3.Dot(toPlayer, Vector3.down) > 0.95; // Using dot product to check if the player is mostly below the enemy
+}
 
     void ChooseNewWanderPoint()
     {

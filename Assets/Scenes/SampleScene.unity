@@ -3765,11 +3765,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6229401be612a064bb23e9da955e216b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  desiredFloatingHeight: 8
+  desiredFloatingHeight: 10
   floatStrength: 600
-  moveSpeed: 10
+  moveSpeed: 18
   detectionRange: 50
   wanderRadius: 40
+  impactForce: 10
+  damage: 12
 --- !u!135 &1675578425
 SphereCollider:
   m_ObjectHideFlags: 0
