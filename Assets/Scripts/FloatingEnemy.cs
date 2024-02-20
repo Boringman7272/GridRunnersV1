@@ -10,6 +10,8 @@ public class FloatingEnemy : MonoBehaviour
     private Rigidbody rb;
     private Transform player;
     private Vector3 wanderPoint;
+    public float impactForce = 10f; // The force applied to the player on impact
+    public int damage = 10;
 
 
     void Start()
@@ -60,5 +62,31 @@ public class FloatingEnemy : MonoBehaviour
         // Random point within wanderRadius
         wanderPoint = transform.position + Random.insideUnitSphere * wanderRadius;
         wanderPoint.y = transform.position.y; // Keep the y position unchanged to maintain floating height
+    }
+
+      void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Player")) // Check if the collided object is the Player
+        {
+            // You can apply force, damage, or any other effect upon collision with the player here
+            var playerRb = collision.gameObject.GetComponent<Rigidbody>();
+            if (playerRb != null)
+            {
+                // Apply an impact force to the player
+                Vector3 forceDirection = collision.contacts[0].point - transform.position;
+                forceDirection = -forceDirection.normalized; // Invert direction for pushing away
+                playerRb.AddForce(forceDirection * impactForce, ForceMode.Impulse);
+            }
+
+            // Apply damage to the player (assuming the player has a method to take damage)
+            PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(damage);
+            }
+
+            // Optional: Destroy or disable the enemy upon impact
+            // Destroy(gameObject); // Uncomment to destroy the enemy on impact
+        }
     }
 }

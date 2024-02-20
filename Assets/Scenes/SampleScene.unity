@@ -310,10 +310,10 @@ GameObject:
   - component: {fileID: 202478659}
   - component: {fileID: 202478658}
   - component: {fileID: 202478657}
-  - component: {fileID: 202478656}
   - component: {fileID: 202478660}
   - component: {fileID: 202478661}
   - component: {fileID: 202478662}
+  - component: {fileID: 202478663}
   m_Layer: 0
   m_Name: Barrel
   m_TagString: Untagged
@@ -321,20 +321,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!136 &202478656
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 202478655}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!23 &202478657
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -444,6 +430,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 20
+--- !u!65 &202478663
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202478655}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.0000001, y: 2, z: 1.0000002}
+  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!1001 &236090786
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -915,6 +914,7 @@ GameObject:
   - component: {fileID: 539182075}
   - component: {fileID: 539182074}
   - component: {fileID: 539182078}
+  - component: {fileID: 539182079}
   m_Layer: 0
   m_Name: Cube (1)
   m_TagString: Untagged
@@ -1015,6 +1015,19 @@ MonoBehaviour:
   health: 1e+9
   damageNumberPrefab: {fileID: 9108111021651772895, guid: 121630bb5a04b05409dc7e345b2f74db, type: 3}
   canvasTransform: {fileID: 778918698}
+--- !u!114 &539182079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 539182073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1617b9b5d447f05498dc9da6ea02cae8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 20
 --- !u!1 &587157567 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4127693865796468901, guid: 2a8ac0c47640d384d9895a6f9e435b32, type: 3}
@@ -2487,7 +2500,7 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1183339809}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5
   m_Height: 2
@@ -3660,15 +3673,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e53ab2d1df8753b48a386c53c4a4c776, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -73.8
+      value: -61.3
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e53ab2d1df8753b48a386c53c4a4c776, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.7
+      value: 27.7
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e53ab2d1df8753b48a386c53c4a4c776, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 76.5
+      value: 63.6
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e53ab2d1df8753b48a386c53c4a4c776, type: 3}
       propertyPath: m_LocalRotation.w
