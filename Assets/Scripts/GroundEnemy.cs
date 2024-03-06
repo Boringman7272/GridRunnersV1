@@ -60,7 +60,7 @@ public class GroundEnemy : MonoBehaviour
         // This could be a simple melee attack, triggering an animation, etc.
         Debug.Log("Attacking the player!");
     }
-          void OnCollisionEnter(Collision collision)
+    void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Player")) // Check if the collided object is the Player
         {
