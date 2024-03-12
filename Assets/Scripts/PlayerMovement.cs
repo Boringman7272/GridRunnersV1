@@ -173,6 +173,8 @@ private void HandleGroundedState()
 
     // Set target speed based on whether the player is sprinting
     float targetSpeed = isSprinting ? maxRunSpeed : maxWalkSpeed;
+    Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+    Vector3 desiredDirection = transform.TransformDirection(input).normalized; // Use the player's transform direction
 
         if (controller.isGrounded && Input.GetButtonDown("Jump"))
     {
@@ -196,8 +198,12 @@ private void HandleGroundedState()
 
     else
     {
-        Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-        Vector3 desiredDirection = playerCamera.TransformDirection(input).normalized;
+        if (desiredDirection.magnitude > 0)
+        {
+            velocity.x = desiredDirection.x * targetSpeed;
+            velocity.z = desiredDirection.z * targetSpeed;
+        }
+        
         desiredDirection.y = 0;
 
         velocity.x = Mathf.MoveTowards(velocity.x, desiredDirection.x * targetSpeed, acceleration * Time.deltaTime);
@@ -213,6 +219,7 @@ private void HandleGroundedState()
 
     }
 }
+controller.Move(velocity * Time.deltaTime);
 } 
 
     private void HandleJumpingState()
