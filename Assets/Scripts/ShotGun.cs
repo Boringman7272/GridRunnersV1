@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class ShotGun : Gun
 {
-    public Transform GunTransform;
+    
     public GameObject shootEffect;
     public RectTransform reticleUI;
-    public Camera playerCamera;
+   
 
     private Coroutine reloadCoroutine;
     
@@ -21,6 +21,10 @@ public class ShotGun : Gun
 
     protected override void Update()
     {
+        if (Gunenabled)
+        {
+        Aiming();
+        }
         switch (state)
         {
             case GunState.Ready:
@@ -46,13 +50,7 @@ public class ShotGun : Gun
             }
     }
 
-    void LateUpdate()
-    {
-        if (Gunenabled)
-        {
-        Aiming();
-        }
-    }
+
 
     protected override void HandleShooting()
     {
@@ -103,40 +101,6 @@ public class ShotGun : Gun
     UpdateAmmoDisplay();
     }
 
-    void Aiming()
-    {
-        int layerMask = (1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("Particles")) | (1 << LayerMask.NameToLayer("UI"));
-        layerMask = ~layerMask; 
-        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        RaycastHit hit;
-        Vector3 targetPoint;
-
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
-        {
-            float minDistance = 3f;
-        if (Vector3.Distance(hit.point, GunTransform.position) > minDistance)
-        {
-            targetPoint = hit.point;
-        }
-        else
-        {
-            targetPoint = ray.GetPoint(1000);
-        }
-    }
-    else
-    {
-        targetPoint = ray.GetPoint(1000);
-    }
-        
-        Debug.DrawLine(playerCamera.transform.position, targetPoint, Color.red);
-        GunTransform.LookAt(targetPoint);
-        Vector3 targetDirection = targetPoint - GunTransform.position;
-        float rotationSpeed = 5f;
-        Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
-        GunTransform.rotation = Quaternion.Slerp(GunTransform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-
-    // Maintain a specific local rotation offset
-        GunTransform.localRotation *= Quaternion.Euler(180, 0, 270);
-}   
+  
 
 }
