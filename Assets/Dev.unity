@@ -1726,16 +1726,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05d25c7ff7ed61f46895836ebe7e74d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GunTransform: {fileID: 893455054}
+  playerCamera: {fileID: 963194227}
   firePoint: {fileID: 1868079737}
   bulletPrefab: {fileID: 3853362718985885307, guid: 18aa6727a8ef451459d74ec943a85519, type: 3}
   maxAmmo: 20
   reloadTime: 2
   Gunenabled: 0
   ammoDisplay: {fileID: 0}
-  GunTransform: {fileID: 893455054}
   shootEffect: {fileID: 6770283199212351534, guid: f2b7678061c0ee343b1cd923d38546b6, type: 3}
   reticleUI: {fileID: 1387782212}
-  playerCamera: {fileID: 963194227}
 --- !u!1001 &918979687
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1942,7 +1942,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 800
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -2673,9 +2673,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6276bdf1e098457439b6edb90bebcf76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  acceleration: 13
+  acceleration: 10
   maxWalkSpeed: 11
-  maxRunSpeed: 25
+  maxRunSpeed: 20
   deceleration: 25
   jumpHeight: 25
   gravity: -7
@@ -2689,7 +2689,7 @@ MonoBehaviour:
   dashReadyPopup: {fileID: 1342006976}
   airControlFactor: 1.4
   airSpeedFactor: 1.25
-  jumpPadForce: -1
+  jumpPadForce: 20
   jumpChargeSlider: {fileID: 1737507661}
   dashEffect: {fileID: 6724137554025899647, guid: bb9a2dbf983b5cc41900abb93447393a, type: 3}
 --- !u!114 &1183339817
@@ -4367,16 +4367,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b5a2e612d7cf0048bc6fab183a4310e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GunTransform: {fileID: 1900419527}
+  playerCamera: {fileID: 963194227}
   firePoint: {fileID: 1900419526}
   bulletPrefab: {fileID: 6916142964328909776, guid: f1bf344d8bbfc604792e7f04d496fd1b, type: 3}
   maxAmmo: 4
   reloadTime: 3
   Gunenabled: 0
   ammoDisplay: {fileID: 741226187}
-  GunTransform: {fileID: 1900419527}
   shootEffect: {fileID: 6770283199212351534, guid: f2b7678061c0ee343b1cd923d38546b6, type: 3}
   reticleUI: {fileID: 1387782212}
-  playerCamera: {fileID: 963194227}
 --- !u!1 &1970476864
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,6 +17,10 @@ public class RocketLauncher : Gun
 
     protected override void Update()
     {
+        if (Gunenabled)
+        {
+        Aiming();
+        }
         switch (state)
         {
             case GunState.Ready:
@@ -38,13 +42,7 @@ public class RocketLauncher : Gun
             }
     }
 
-    void LateUpdate()
-    {
-        if (Gunenabled)
-        {
-        Aiming();
-        }
-    }
+    
 
     protected override void HandleShooting()
     {

@@ -117,6 +117,7 @@ public abstract class Gun : MonoBehaviour
         // Update the UI for this gun
         UpdateAmmoDisplay();
     }
+    private Vector3 smoothedTargetPoint;
     public void Aiming()
     {
         int layerMask = (1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("Particles")) | (1 << LayerMask.NameToLayer("UI"));
@@ -128,28 +129,30 @@ public abstract class Gun : MonoBehaviour
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
         {
             float minDistance = 3f;
-        if (Vector3.Distance(hit.point, GunTransform.position) > minDistance)
-        {
-            targetPoint = hit.point;
+            targetPoint = Vector3.Distance(hit.point, GunTransform.position) > minDistance ? hit.point : ray.GetPoint(1000);
         }
         else
         {
             targetPoint = ray.GetPoint(1000);
         }
-    }
-    else
-    {
-        targetPoint = ray.GetPoint(1000);
-    }
+        if (Input.GetAxis("Vertical") < 0) 
+        {
         
-        Debug.DrawLine(playerCamera.transform.position, targetPoint, Color.red);
+        targetPoint = ray.GetPoint(200); 
+        }
+        smoothedTargetPoint = Vector3.Lerp(smoothedTargetPoint, targetPoint, Time.deltaTime * 0.5f); // Adjust smoothing speed as needed
+        Debug.DrawLine(playerCamera.transform.position, smoothedTargetPoint, Color.red);
+        smoothedTargetPoint.y = Mathf.Clamp(smoothedTargetPoint.y, GunTransform.position.y - 1f, GunTransform.position.y + 1f); // Adjust vertical limits
         GunTransform.LookAt(targetPoint);
-        Vector3 targetDirection = targetPoint - GunTransform.position;
+        Vector3 targetDirection = smoothedTargetPoint - GunTransform.position;
         float rotationSpeed = 5f;
         Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+    
+        
+        
         GunTransform.rotation = Quaternion.Slerp(GunTransform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
-    // Maintain a specific local rotation offset
+        
         GunTransform.localRotation *= Quaternion.Euler(-90, 0, 0);
 }
     public virtual void EnableGun()

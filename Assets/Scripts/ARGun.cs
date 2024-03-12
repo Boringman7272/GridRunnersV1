@@ -16,6 +16,10 @@ public class ARGun : Gun
 
     protected override void Update()
     {
+        if (Gunenabled)
+        {
+        Aiming();
+        }
         switch (state)
         {
             case GunState.Ready:
@@ -36,13 +40,7 @@ public class ARGun : Gun
             }
     }
 
-    void LateUpdate()
-    {
-        if (Gunenabled)
-        {
-        Aiming();
-        }
-    }
+    
 
     protected override void HandleShooting()
     {
