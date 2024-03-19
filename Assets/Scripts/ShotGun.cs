@@ -60,7 +60,43 @@ public class ShotGun : Gun
             UpdateAmmoDisplay();
         }
     }
+        protected override void Aiming()
+    {
+        int layerMask = (1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("Particles")) | (1 << LayerMask.NameToLayer("UI"));
+        layerMask = ~layerMask; 
+        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        RaycastHit hit;
+        Vector3 targetPoint;
 
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+        {
+            float minDistance = 3f;
+            targetPoint = Vector3.Distance(hit.point, GunTransform.position) > minDistance ? hit.point : ray.GetPoint(1000);
+        }
+        else
+        {
+            targetPoint = ray.GetPoint(1000);
+        }
+        if (Input.GetAxis("Vertical") < 0) 
+        {
+        
+        targetPoint = ray.GetPoint(200); 
+        }
+        smoothedTargetPoint = Vector3.Lerp(smoothedTargetPoint, targetPoint, Time.deltaTime * 0.5f); // Adjust smoothing speed as needed
+        Debug.DrawLine(playerCamera.transform.position, smoothedTargetPoint, Color.red);
+        smoothedTargetPoint.y = Mathf.Clamp(smoothedTargetPoint.y, GunTransform.position.y - 1f, GunTransform.position.y + 1f); // Adjust vertical limits
+        GunTransform.LookAt(targetPoint);
+        Vector3 targetDirection = smoothedTargetPoint - GunTransform.position;
+        float rotationSpeed = 5f;
+        Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+    
+        
+        
+        GunTransform.rotation = Quaternion.Slerp(GunTransform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+
+        
+        GunTransform.localRotation *= Quaternion.Euler(180, 0, 270);
+}
     protected override void Shoot()
     {
         //base.Shoot();

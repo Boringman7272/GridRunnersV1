@@ -10,7 +10,7 @@ public abstract class Gun : MonoBehaviour
     public Camera playerCamera;
     public Transform firePoint;
     public GameObject bulletPrefab;
-    public int maxAmmo = 20;
+    public int maxAmmo = 30;
     protected int currentAmmo;
     public float reloadTime = 2f;
     protected bool isReloading = false;
@@ -117,8 +117,8 @@ public abstract class Gun : MonoBehaviour
         // Update the UI for this gun
         UpdateAmmoDisplay();
     }
-    private Vector3 smoothedTargetPoint;
-    public void Aiming()
+    public Vector3 smoothedTargetPoint;
+    protected virtual void Aiming()
     {
         int layerMask = (1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("Particles")) | (1 << LayerMask.NameToLayer("UI"));
         layerMask = ~layerMask; 

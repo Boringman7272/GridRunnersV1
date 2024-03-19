@@ -111,11 +111,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9442beb8f55d13d4a9153d35794b4eed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 150
+  speed: 200
   rb: {fileID: -7455781988158692690}
   explosionEffect: {fileID: 4213514192341667836, guid: 59ca63d937245eb4bb52c0aec34288eb, type: 3}
   lifespan: 10
-  ARbulletdmg: 26
+  ARbulletdmg: 24
 --- !u!54 &-7455781988158692690
 Rigidbody:
   m_ObjectHideFlags: 0
