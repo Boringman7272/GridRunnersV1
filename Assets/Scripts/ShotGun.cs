@@ -7,8 +7,10 @@ public class ShotGun : Gun
     public GameObject shootEffect;
     public RectTransform reticleUI;
    
-
+    public LayerMask hitLayers;
     private Coroutine reloadCoroutine;
+    public PlayerMovement playerMovement;
+    [SerializeField] private LineRenderer lineRenderer;
     
     //private bool gunEnabled = false;
 
@@ -57,6 +59,11 @@ public class ShotGun : Gun
         if (Input.GetButtonDown("Fire1") && currentAmmo > 0)
         {
             Shoot();
+            UpdateAmmoDisplay();
+        }
+        if(Input.GetButtonDown("Fire2") && currentAmmo > 0)
+        {
+            AltShoot();
             UpdateAmmoDisplay();
         }
     }
@@ -136,6 +143,53 @@ public class ShotGun : Gun
     currentAmmo--;
     UpdateAmmoDisplay();
     }
+
+
+    private void AltShoot()
+    {
+        hitLayers = ~LayerMask.GetMask("UI");
+        Vector3 rayStart = playerCamera.transform.position + playerCamera.transform.forward * 0.3f;
+        RaycastHit hit;
+        Debug.Log("RayStart: " + rayStart + ", Direction: " + playerCamera.transform.forward);
+
+
+        // Perform raycast from the center of the camera view
+        if (Physics.Raycast(rayStart, playerCamera.transform.forward, out hit, Mathf.Infinity, hitLayers))
+        {
+            StartCoroutine(ShowRaycastLine(firePoint.position, hit.point));
+        // Access PlayerMovement script attached to the player
+        Debug.DrawRay(rayStart, hit.point, Color.green, 2f); // The ray will be green and last for 2 seconds
+
+        // Log the name of the object hit by the raycast
+        Debug.Log("Hit: " + hit.collider.gameObject.name);
+            PlayerMovement playerMovement = playerCamera.GetComponentInParent<PlayerMovement>();
+            if (playerMovement != null)
+            {
+            // Calculate the force direction towards the hit point
+                Vector3 forceDirection = (hit.point - transform.position).normalized;
+                float grapplingForceMagnitude = 50f; // Define the force magnitude
+                playerMovement.ApplyGrapplingHookForce(forceDirection * grapplingForceMagnitude); // Apply force in the PlayerMovement script
+            }
+        }
+        else
+    {
+        // If nothing was hit, show the ray going off into the distance and log "No hit"
+        Debug.DrawRay(rayStart, rayStart + playerCamera.transform.forward * 100f, Color.red, 2f); // The ray will be red and last for 2 seconds
+        Debug.Log("No hit");
+    }
+        currentAmmo--;
+}
+
+IEnumerator ShowRaycastLine(Vector3 start, Vector3 end)
+{
+    lineRenderer.SetPosition(0, start);
+    lineRenderer.SetPosition(1, end);
+    lineRenderer.enabled = true;
+
+    yield return new WaitForSeconds(0.02f); // How long the line is visible
+
+    lineRenderer.enabled = false;
+}
 
   
 

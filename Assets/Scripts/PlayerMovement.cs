@@ -36,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
     public float jumpPadForce = -1f;
     public Slider jumpChargeSlider;
     public GameObject dashEffect;
+    public Vector3 externalForce;
 
 
     private enum PlayerState
@@ -61,7 +62,7 @@ public class PlayerMovement : MonoBehaviour
         {
             justLanded = true;
         }
-
+    
     
     if (controller.isGrounded)
     {
@@ -94,7 +95,12 @@ public class PlayerMovement : MonoBehaviour
             // Dashing is handled in the coroutine
             break;
     }
-    
+    if (externalForce != Vector3.zero)
+    {
+        controller.Move(externalForce * Time.deltaTime);
+        // Dampen the external force over time
+        externalForce = Vector3.Lerp(externalForce, Vector3.zero, 1 * Time.deltaTime);
+    }
     // Apply gravity every frame regardless of the state
     if (!controller.isGrounded)
     {
@@ -323,12 +329,24 @@ private void PerformChargedJump(float customJumpForce = -1f)
 }
 
 }
-
+public void ApplyExternalForce(Vector3 force)
+{
+    // Store the external force
+    this.externalForce = force;
+    // Optionally, set a timer or some condition to decrease this force over time to simulate damping
+}
 
 public void InitiateJumpPadJump(float jumpPadForce)
 {
     // You can modify this to be a special type of jump if needed
     PerformChargedJump(jumpPadForce); // jumpPadForce would be a predefined force specific to jump pads
+}
+
+    public void ApplyGrapplingHookForce(Vector3 force)
+{
+    // Apply the force
+    this.externalForce = force;
+    // Ensure the force application is immediate, you might need to adjust player state or interrupt current actions
 }
 
 

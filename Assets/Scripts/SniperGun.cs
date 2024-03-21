@@ -9,7 +9,9 @@ public class SniperGun : Gun
     public RectTransform reticleUI;
     public LayerMask hitLayers;
     public float sniperDamage = 120f;
+    public float chargedsniperDamage = 500f;
     public float shotCooldown = 1.2f;
+    public float ChargedshotCooldown = 2.5f;
     private bool canShoot = true;
     //private bool gunEnabled = false;
     private Coroutine reloadCoroutine;
@@ -63,6 +65,13 @@ public class SniperGun : Gun
             StartCoroutine(ShootCooldown());
             
         }
+        if (Input.GetButtonDown("Fire2") && currentAmmo >= 3 && canShoot && !isReloading)
+        {
+            AltShoot();
+            UpdateAmmoDisplay();
+            StartCoroutine(ChargedShootCooldown());
+            
+        }
     }
 
     protected override void Shoot()
@@ -105,6 +114,52 @@ public class SniperGun : Gun
         UpdateAmmoDisplay();
     
     }
+
+    private void AltShoot()
+{
+    Vector3 rayStart = playerCamera.transform.position + playerCamera.transform.forward * 0.3f;
+    RaycastHit[] hits;
+
+    if (shootEffect != null)
+    {
+        Instantiate(shootEffect, firePoint.position, Quaternion.identity);
+    }
+
+    // Use Physics.RaycastAll to get all hits from the ray
+    hits = Physics.RaycastAll(rayStart, playerCamera.transform.forward, Mathf.Infinity, hitLayers);
+
+    // Check if the ray hit any objects
+    if (hits.Length > 0)
+    {
+        // Process all hits
+        foreach (RaycastHit hit in hits)
+        {
+            // Show hit effect at each point of impact
+            if (hitEffect != null)
+            {
+                Instantiate(hitEffect, hit.point, Quaternion.LookRotation(hit.normal));
+            }
+
+            // Deal damage if the hit object can take damage
+            Shootable shootable = hit.collider.GetComponent<Shootable>();
+            if (shootable != null)
+            {
+                shootable.TakeDamage(chargedsniperDamage);
+            }
+        }
+        
+        // Optionally, show the last hit with the raycast line for visualization
+        StartCoroutine(ShowRaycastLine(firePoint.position, hits[hits.Length - 1].point));
+    }
+    else
+    {
+        // If nothing was hit, show the ray going off into the distance
+        StartCoroutine(ShowRaycastLine(firePoint.position, rayStart + playerCamera.transform.forward * 100f)); // Adjust the max distance as needed
+    }
+
+    currentAmmo -= 3;
+    UpdateAmmoDisplay();
+}
  
 
 
@@ -114,7 +169,12 @@ IEnumerator ShootCooldown()
         yield return new WaitForSeconds(shotCooldown);
         canShoot = true;
     }
-
+IEnumerator ChargedShootCooldown()
+    {
+        canShoot = false;
+        yield return new WaitForSeconds(ChargedshotCooldown);
+        canShoot = true;
+    }
 
 IEnumerator ShowRaycastLine(Vector3 start, Vector3 end)
 {

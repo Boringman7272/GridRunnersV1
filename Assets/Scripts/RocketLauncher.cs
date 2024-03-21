@@ -73,6 +73,28 @@ public class RocketLauncher : Gun
         Collider[] colliders = Physics.OverlapSphere(firePoint.position, knockbackRadius);
         foreach (Collider hit in colliders)
         {
+
+            CharacterController characterController = hit.GetComponent<CharacterController>();
+
+            if (characterController != null)
+            {
+            // Calculate the direction of the force
+            Vector3 direction = (characterController.transform.position - firePoint.position).normalized;
+            
+            // upward force
+            direction.y += 0.5f;
+            
+            // Calculate the strength of the force based on distance from the explosion center
+            float distance = Vector3.Distance(firePoint.position, characterController.transform.position);
+            float force = Mathf.Lerp(knockbackForce, 0, distance / knockbackRadius);
+            
+            
+            PlayerMovement playerMovement = characterController.GetComponent<PlayerMovement>();
+            if (playerMovement != null)
+            {
+                playerMovement.ApplyExternalForce(direction * force); // Implement this method in your PlayerMovement script
+            }
+            }
             Rigidbody rb = hit.GetComponent<Rigidbody>();
 
             if (rb != null)
@@ -81,10 +103,10 @@ public class RocketLauncher : Gun
                 // Apply knockback force to each rigidbody
                 rb.AddExplosionForce(knockbackForce, firePoint.position, knockbackRadius, 5f, ForceMode.Impulse);
             }
-        }
+        
 
         currentAmmo--; // Consume one ammo
         UpdateAmmoDisplay(); // Update the ammo display
     }
-    
+    }   
 }
