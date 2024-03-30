@@ -6,10 +6,11 @@ using UnityEngine.UI;
 public class PlayerHealth : MonoBehaviour
 {
     public int maxHealth = 100;
-    private int currentHealth;
+    protected int currentHealth;
     public Image healthBarFill;
     public TextMeshProUGUI currentHp;
     public Slider HpSlider;
+    public int predictedHealth;
     void Start()
     {
         // Initialize player's health
@@ -31,6 +32,35 @@ public class PlayerHealth : MonoBehaviour
         // Optional: Add logic to update the UI with the new health value
         UpdateHealthUI();
     }
+    public void HealDamage(int healing)
+    {
+        predictedHealth = currentHealth + healing;
+
+        bool isHealthAboveMax = predictedHealth >= maxHealth;
+
+        switch (isHealthAboveMax)
+        {
+            case true:
+                currentHealth = maxHealth;
+            break; 
+
+            case false:
+                currentHealth = predictedHealth;
+            break; 
+        }
+        
+        //if(predictedHealth >= 100 ){
+
+       // }
+        //if (currentHealth <= 100)
+        //{
+       // currentHealth += healing;
+
+       // }
+
+        // Optional: Add logic to update the UI with the new health value
+        UpdateHealthUI();
+    }
 
     private void Die()
     {
@@ -45,5 +75,9 @@ public class PlayerHealth : MonoBehaviour
         //Old Hp bar before slider was set up
         //healthBarFill.fillAmount = (float)currentHealth / maxHealth;
         HpSlider.value = (float)currentHealth / maxHealth;
+    }
+    public int GetPlayerHealth()
+    {
+        return currentHealth;
     }
 }
