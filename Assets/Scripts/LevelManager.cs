@@ -1,4 +1,8 @@
 using UnityEngine;
+using TMPro;
+using System.Collections;
+using UnityEngine.SceneManagement;
+
 
 public class LevelManager : MonoBehaviour
 {
@@ -8,7 +12,12 @@ public class LevelManager : MonoBehaviour
     private bool levelCompleted = false;
     public bool doorPassed = false;
     public GameObject scoreboardPanel;
-    public Text timeText;
+    public GameObject otherUIElements;
+    public TextMeshProUGUI completionTimeText;
+    public TextMeshProUGUI playerNameText;
+    public int LevelNumber = 1; 
+    public string playerName = "SNOWY";
+    public GameObject gameplayUI;
 
     void Start()
     {
@@ -46,6 +55,9 @@ public class LevelManager : MonoBehaviour
 
     public void CompleteLevel()
     {
+        Debug.Log("Level completed, showing scoreboard.");
+        HideOtherUI(); // Hide all other UI elements
+        SlowDownGame();
         levelCompleted = true; // Mark level as completed to stop the timer
         elapsedTime = Time.time - startTime; // Final time calculation
         ShowScoreboard(elapsedTime); // Display the scoreboard
@@ -55,10 +67,12 @@ public class LevelManager : MonoBehaviour
     {
         int minutes = Mathf.FloorToInt(time / 60F);
         int seconds = Mathf.FloorToInt(time - minutes * 60);
-        string niceTime = string.Format("{0:0}:{1:00}", minutes, seconds);
+        string formattedTime = string.Format("{0:0}:{1:00}", minutes, seconds);
 
-        timeText.text = niceTime; // Update the UI element
-        scoreboardPanel.SetActive(true); // Show the scoreboard
+        completionTimeText.text = $"Time: {formattedTime}";
+        playerNameText.text = $"Player: {PlayerPrefs.GetString("PlayerName", "Default")}";
+    
+        scoreboardPanel.SetActive(true);
     }
     public void SaveLevelTime(float time, int levelNumber)
     {
@@ -73,4 +87,43 @@ public class LevelManager : MonoBehaviour
         string playerName = PlayerPrefs.GetString("PlayerName", "DefaultPlayer");
         // Use these values to display on the UI or for other logic
     }
+
+    public void SetPlayerName(string name)
+    {
+        PlayerPrefs.SetString("PlayerName", name);
+    }
+    public void HideOtherUI()
+    {
+        gameplayUI.SetActive(false);
+    }
+    
+
+    public void SlowDownGame()
+    {
+    StartCoroutine(SlowDownRoutine());
+    }
+
+    IEnumerator SlowDownRoutine()
+{
+    while (Time.timeScale > 0.1f)
+    {
+        Time.timeScale = Mathf.Lerp(Time.timeScale, 0f, 0.1f); // Adjust the lerp speed as needed
+        yield return null; // Wait for the next frame
+    }
+
+    Time.timeScale = 0; // Pause the game
+}
+
+public void RestartLevelOrGoToNext()
+{
+    Time.timeScale = 1; // Resume normal game speed
+    // Your code to restart the level or go to the next one
+}
+
+public void GoToMenu()
+    {
+        SceneManager.LoadScene("Menus"); // Replace "Dev" with the exact name of your scene
+    }
+
+
 }

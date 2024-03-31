@@ -37,12 +37,12 @@ public class Shootable : MonoBehaviour
     if (floatingEnemy != null)
     {
         // Call the OnDefeat method or any relevant method on the FloatingEnemy script
-        groundEnemy.OnDefeat();
+        floatingEnemy.OnDefeat();
     }
     if (groundEnemy != null)
     {
         // Call the OnDefeat method or any relevant method on the FloatingEnemy script
-        floatingEnemy.OnDefeat();
+        groundEnemy.OnDefeat();
     }
     
     // Destroy the GameObject
