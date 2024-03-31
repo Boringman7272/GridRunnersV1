@@ -85,4 +85,10 @@ public class GroundEnemy : MonoBehaviour
             // Destroy(gameObject); // Uncomment to destroy the enemy on impact
         }
     }
+
+    public void OnDefeat()
+    {
+        // Other defeat logic...
+        FindObjectOfType<LevelManager>().EnemyDefeated();
+    }
 }

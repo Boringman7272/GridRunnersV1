@@ -27,10 +27,27 @@ public class Shootable : MonoBehaviour
     }
 
     private void Die()
+{
+    
+    // Get the FloatingEnemy component from the same GameObject
+    FloatingEnemy floatingEnemy = GetComponent<FloatingEnemy>();
+    GroundEnemy groundEnemy = GetComponent<GroundEnemy>();
+    
+    // Check if the component exists to avoid null reference errors
+    if (floatingEnemy != null)
     {
-        // Add logic for what happens when the object is destroyed
-        Destroy(gameObject);
+        // Call the OnDefeat method or any relevant method on the FloatingEnemy script
+        groundEnemy.OnDefeat();
     }
+    if (groundEnemy != null)
+    {
+        // Call the OnDefeat method or any relevant method on the FloatingEnemy script
+        floatingEnemy.OnDefeat();
+    }
+    
+    // Destroy the GameObject
+    Destroy(gameObject);
+}
 
     private void ShowDamageNumber(float damage)
     {

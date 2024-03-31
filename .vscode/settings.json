@@ -56,5 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Gridrunners.sln"
+    "dotnet.defaultSolution": "GridRunnersV1.sln",
+    "dotnet.preferCSharpExtension": true
 }

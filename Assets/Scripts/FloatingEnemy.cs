@@ -156,4 +156,10 @@ if (!isDashing) // Only move normally if not in a dash
 
         isDashing = false; // Reset dashing state
     }
+
+    public void OnDefeat()
+    {
+        // Other defeat logic...
+        FindObjectOfType<LevelManager>().EnemyDefeated();
+    }
 }
