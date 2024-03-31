@@ -2,6 +2,8 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
+using System;
 
 
 public class LevelManager : MonoBehaviour
@@ -18,15 +20,56 @@ public class LevelManager : MonoBehaviour
     public int LevelNumber = 1; 
     public string playerName = "SNOWY";
     public GameObject gameplayUI;
+    public GameObject EntryPrefab; // Assign in the inspector
+    public Transform playerlistParent; // Parent GameObject where time entries will be added
+    public Transform timelistParent;
+    private List<float> levelTimes = new List<float>();
+    private List<string> levelNames = new List<string>();
 
     void Start()
     {
         StartLevel();
     }
 
+    
     public void StartLevel()
     {
         startTime = Time.time; // Record the start time
+    }
+
+    public void AddTimeToList(float time)
+    {
+        // Add time to the list
+        levelTimes.Add(time);
+
+        // Instantiate a new time entry prefab and set it as a child of timeListParent
+        GameObject newTimeEntry = Instantiate(EntryPrefab, timelistParent);
+
+        // Get the Text component of the new entry and set its text to the formatted time
+        TextMeshProUGUI timeText = newTimeEntry.GetComponent<TextMeshProUGUI>();
+        if (timeText != null)
+        {
+            int minutes = Mathf.FloorToInt(time / 60F);
+            int seconds = Mathf.FloorToInt(time % 60);
+            timeText.text = string.Format("{0:0}:{1:00}", minutes, seconds);
+        }
+    }
+
+    public void AddNameToList(string name)
+    {
+        // Add Name to the list
+        
+        levelNames.Add(name);
+
+        // Instantiate a new name entry prefab and set it as a child of playerlistParent
+        GameObject newNameEntry = Instantiate(EntryPrefab, playerlistParent);
+
+        // Get the Text component of the new entry and set its text to the formatted time
+        TextMeshProUGUI nameText = newNameEntry.GetComponent<TextMeshProUGUI>();
+        if (nameText != null)
+        {
+            nameText.text = $"Player: {PlayerPrefs.GetString("PlayerName", "Default")}";;
+        }
     }
 
     void Update()
@@ -60,17 +103,26 @@ public class LevelManager : MonoBehaviour
         SlowDownGame();
         levelCompleted = true; // Mark level as completed to stop the timer
         elapsedTime = Time.time - startTime; // Final time calculation
+        name = $"Player: {PlayerPrefs.GetString("PlayerName", "Default")}";
+        AddTimeToList(elapsedTime);
+        AddNameToList(PlayerPrefs.GetString("PlayerName", "Default"));
         ShowScoreboard(elapsedTime); // Display the scoreboard
+        Debug.Log("Scoreboard shown should be called");
     }
 
     public void ShowScoreboard(float time)
     {
-        int minutes = Mathf.FloorToInt(time / 60F);
-        int seconds = Mathf.FloorToInt(time - minutes * 60);
-        string formattedTime = string.Format("{0:0}:{1:00}", minutes, seconds);
+        Debug.Log("Sscoreboard called");
+        Cursor.visible = true;
 
-        completionTimeText.text = $"Time: {formattedTime}";
-        playerNameText.text = $"Player: {PlayerPrefs.GetString("PlayerName", "Default")}";
+        // Unlock the cursor, allowing the player to move it freely
+        Cursor.lockState = CursorLockMode.None;
+        //int minutes = Mathf.FloorToInt(time / 60F);
+        //int seconds = Mathf.FloorToInt(time - minutes * 60);
+        //string formattedTime = string.Format("{0:0}:{1:00}", minutes, seconds);
+
+        //completionTimeText.text = $"Time: {formattedTime}";
+        //playerNameText.text = $"Player: {PlayerPrefs.GetString("PlayerName", "Default")}";
     
         scoreboardPanel.SetActive(true);
     }
