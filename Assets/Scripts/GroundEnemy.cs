@@ -1,67 +1,109 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.AI; // Make sure to include this namespace for pathfinding
+using UnityEngine.AI;
 
 public class GroundEnemy : MonoBehaviour
 {
-    public Transform player; // Player's transform
-    public float detectionRange = 10f; // Range within which the player is detected
-    public float attackRange = 2f; // Range within which the enemy can attack
-    public float wanderRadius = 20f; // Radius within which the enemy will wander when the player is not detected
-    private NavMeshAgent agent; // The NavMeshAgent component for pathfinding
-    private Vector3 wanderPoint; // Point to wander to when the player is not in detection range
-    public float impactForce = 10f;
+    [Header("Player Tracking")]
+    public Transform player;
+    public float detectionRange = 10f;
 
-    public int damage = 10;
+    [Header("Wandering")]
+    public float wanderRadius = 20f;
+    private Vector3 wanderPoint;
+
+    [Header("Jump Attack")]
+    public float jumpTriggerDistance = 20f;
+    public Vector3 jumpForce = new Vector3(0, 15f, 30f); // Significantly increased
+    public float chargeUpTime = 1f;
+    public float impactForce = 10f;
+    public int damage = 20;
+
+    private NavMeshAgent agent;
+    private Rigidbody rb;
+    private bool isJumping = false;
+    private bool isCharging = false;
 
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>(); // Get the NavMeshAgent component
-        player = GameObject.FindGameObjectWithTag("Player").transform; // Find the player by tag
-        ChooseNewWanderPoint(); // Choose an initial wander point
+        agent = GetComponent<NavMeshAgent>();
+        rb = GetComponent<Rigidbody>();
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+
+        ChooseNewWanderPoint();
     }
 
-    void FixedUpdate()
+    void Update()
     {
+        if (isJumping) return; // Skip normal behavior if in the middle of a jump
+
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
         if (distanceToPlayer <= detectionRange)
         {
-            agent.SetDestination(player.position); // Set the player's position as the destination
-
-            if (distanceToPlayer <= attackRange)
+            if (distanceToPlayer > jumpTriggerDistance)
             {
-                AttackPlayer(); // Call your attack function here
+                agent.isStopped = false;
+                agent.SetDestination(player.position);
+            }
+            else if (!isCharging)
+            {
+                StartCoroutine(ChargeAndJump());
             }
         }
         else
         {
-            if (!agent.pathPending && agent.remainingDistance < 0.5f)
-            {
-                ChooseNewWanderPoint(); // Choose a new wander point when the current one is reached
-            }
+            Wander();
+        }
+    }
+
+    void Wander()
+    {
+        if (!agent.pathPending && agent.remainingDistance < 1f)
+        {
+            ChooseNewWanderPoint();
         }
     }
 
     void ChooseNewWanderPoint()
     {
-        Vector3 randomDirection = Random.insideUnitSphere * wanderRadius;
-        randomDirection += transform.position;
+        Vector3 randomDirection = Random.insideUnitSphere * wanderRadius + transform.position;
         NavMeshHit hit;
-        NavMesh.SamplePosition(randomDirection, out hit, wanderRadius, 1);
+        NavMesh.SamplePosition(randomDirection, out hit, wanderRadius, -1);
         wanderPoint = hit.position;
-
-        agent.SetDestination(wanderPoint); // Set the wander point as the new destination
+        agent.SetDestination(wanderPoint);
     }
 
-    void AttackPlayer()
+    IEnumerator ChargeAndJump()
     {
-        // Implement your attack logic here
-        // This could be a simple melee attack, triggering an animation, etc.
-        Debug.Log("Attacking the player!");
+        isCharging = true;
+        agent.isStopped = true;
+
+        yield return new WaitForSeconds(chargeUpTime);
+
+        // Face the player directly before jumping
+        transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
+
+        // Jump towards the player
+        rb.AddRelativeForce(jumpForce, ForceMode.Impulse);
+
+        isCharging = false;
+        isJumping = true;
+
+        // Wait for a bit after the jump to resume normal behavior
+        yield return new WaitForSeconds(2f);
+        isJumping = false;
     }
+
     void OnCollisionEnter(Collision collision)
     {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            // This helps in quick recovery and resumption of normal behavior after being affected by external forces.
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+    
         if (collision.gameObject.CompareTag("Player")) // Check if the collided object is the Player
         {
             // You can apply force, damage, or any other effect upon collision with the player here
@@ -91,4 +133,6 @@ public class GroundEnemy : MonoBehaviour
         // Other defeat logic...
         FindObjectOfType<LevelManager>().EnemyDefeated();
     }
+    
 }
+

@@ -32,6 +32,7 @@ public class Shootable : MonoBehaviour
     // Get the FloatingEnemy component from the same GameObject
     FloatingEnemy floatingEnemy = GetComponent<FloatingEnemy>();
     GroundEnemy groundEnemy = GetComponent<GroundEnemy>();
+    Ranger ranger = GetComponent<Ranger>();
     
     // Check if the component exists to avoid null reference errors
     if (floatingEnemy != null)
@@ -43,6 +44,11 @@ public class Shootable : MonoBehaviour
     {
         // Call the OnDefeat method or any relevant method on the FloatingEnemy script
         groundEnemy.OnDefeat();
+    }
+    if (ranger != null)
+    {
+        // Call the OnDefeat method or any relevant method on the FloatingEnemy script
+        ranger.OnDefeat();
     }
     
     // Destroy the GameObject

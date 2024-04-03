@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3163987259733194912}
   - component: {fileID: 4335040130623513642}
   - component: {fileID: 4505051480879696196}
+  - component: {fileID: 7159103221523713252}
   m_Layer: 0
   m_Name: rangerProjectile
   m_TagString: Untagged
@@ -29,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 3524139095878900085}
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
   m_LocalPosition: {x: -93.57805, y: 0.05000019, z: 37.372547}
-  m_LocalScale: {x: 0.6, y: 1.25, z: 0.8}
+  m_LocalScale: {x: 0.4, y: 0.2, z: 0.4}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -97,12 +98,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e55a14847a785b48869ad8ebb1c6f19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  homingRate: 2
-  speed: 50
+  homingRate: 90
+  speed: 37
   rb: {fileID: 4505051480879696196}
   explosionEffect: {fileID: 2708598583397607911, guid: 6398d43fe79ea0140913dc5530c646af, type: 3}
-  lifespan: 10
-  damage: 10
+  lifespan: 15
+  damage: 5
   impactForce: 10
 --- !u!54 &4505051480879696196
 Rigidbody:
@@ -120,3 +121,16 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 2
+--- !u!65 &7159103221523713252
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3524139095878900085}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.4148145, y: 2.30581, z: 0.4999999}
+  m_Center: {x: 0, y: -0.09709476, z: 0}

@@ -9,6 +9,7 @@ TagManager:
   - FxTemporaire
   - CinemachineTarget
   - ScoreboardPanel
+  - Ground
   layers:
   - Default
   - TransparentFX

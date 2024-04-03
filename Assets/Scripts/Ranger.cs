@@ -6,7 +6,8 @@ public class Ranger : MonoBehaviour
     public GameObject projectilePrefab; // The projectile prefab
     public Transform firePoint; // The point from where the projectiles are shot
     public float shootInterval = 2f; // Time between each shot
-    public float coneAngle = 30f; // Maximum deviation angle from the forward direction for the projectiles
+    public float coneAngle = 30f;
+    private float shootingRange = 300f;  // Maximum deviation angle from the forward direction for the projectiles
 
     private float shootTimer = 0f; // Timer to keep track of shooting cooldown
 
@@ -21,10 +22,15 @@ public class Ranger : MonoBehaviour
     void Update()
     {
         FacePlayer();
-        HandleShooting();
+        
         CorrectModelOrientation();
         DrawFiringCone();
         Debug.DrawRay(firePoint.position, firePoint.forward * 10, Color.red, 2f);
+        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        if (distanceToPlayer <= shootingRange)
+        {
+            HandleShooting();
+        }
 
     }
 
@@ -57,7 +63,7 @@ public class Ranger : MonoBehaviour
 
         // Instantiate the projectile with the final rotation
         GameObject projectile = Instantiate(projectilePrefab, firePoint.position, finalRotation);
-
+        
         // Here, you can set up the projectile's behavior further, such as its homing target or velocity
         RangerProjectile projectileScript = projectile.GetComponent<RangerProjectile>();
         if (projectileScript != null)
@@ -85,4 +91,11 @@ public class Ranger : MonoBehaviour
     // Set the model's local rotation to be corrected by -90 degrees on the X axis
     modelTransform.localEulerAngles = new Vector3(90, modelTransform.localEulerAngles.y, modelTransform.localEulerAngles.z);
 }
+public void OnDefeat()
+    {
+        // Other defeat logic...
+        FindObjectOfType<LevelManager>().EnemyDefeated();
+    }
+
+    
 }
