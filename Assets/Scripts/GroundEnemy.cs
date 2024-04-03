@@ -1,138 +1,138 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.AI;
-
 public class GroundEnemy : MonoBehaviour
 {
     [Header("Player Tracking")]
     public Transform player;
-    public float detectionRange = 10f;
+    public float detectionRange = 20f;
+    public float pursuitSpeed = 5f;
 
     [Header("Wandering")]
     public float wanderRadius = 20f;
+    public float wanderSpeed = 2f;
     private Vector3 wanderPoint;
 
     [Header("Jump Attack")]
-    public float jumpTriggerDistance = 20f;
-    public Vector3 jumpForce = new Vector3(0, 15f, 30f); // Significantly increased
+    public float jumpTriggerDistance = 10f;
+    public Vector3 jumpForce = new Vector3(0, 5f, 10f);
     public float chargeUpTime = 1f;
     public float impactForce = 10f;
     public int damage = 20;
 
-    private NavMeshAgent agent;
     private Rigidbody rb;
     private bool isJumping = false;
     private bool isCharging = false;
+    private bool isGrounded = false;
 
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
-
         ChooseNewWanderPoint();
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        if (isJumping) return; // Skip normal behavior if in the middle of a jump
-
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-        if (distanceToPlayer <= detectionRange)
+        if (!isJumping && !isCharging)
         {
-            if (distanceToPlayer > jumpTriggerDistance)
+            if (distanceToPlayer <= detectionRange)
             {
-                agent.isStopped = false;
-                agent.SetDestination(player.position);
+                if (distanceToPlayer <= jumpTriggerDistance)
+                {
+                    StartCoroutine(ChargeAndJump());
+                }
+                else
+                {
+                    MoveTowards(player.position, pursuitSpeed);
+                }
             }
-            else if (!isCharging)
+            else
             {
-                StartCoroutine(ChargeAndJump());
+                Wander();
             }
         }
-        else
-        {
-            Wander();
-        }
+    }
+
+    void MoveTowards(Vector3 target, float speed)
+    {
+        Vector3 direction = (target - transform.position).normalized;
+        rb.MovePosition(rb.position + direction * speed * Time.fixedDeltaTime);
     }
 
     void Wander()
     {
-        if (!agent.pathPending && agent.remainingDistance < 1f)
+        if (Vector3.Distance(transform.position, wanderPoint) < 2f)
         {
             ChooseNewWanderPoint();
+        }
+        else
+        {
+            MoveTowards(wanderPoint, wanderSpeed);
         }
     }
 
     void ChooseNewWanderPoint()
     {
-        Vector3 randomDirection = Random.insideUnitSphere * wanderRadius + transform.position;
-        NavMeshHit hit;
-        NavMesh.SamplePosition(randomDirection, out hit, wanderRadius, -1);
-        wanderPoint = hit.position;
-        agent.SetDestination(wanderPoint);
+        wanderPoint = transform.position + Random.insideUnitSphere * wanderRadius;
+        wanderPoint.y = transform.position.y;
     }
 
     IEnumerator ChargeAndJump()
+{
+    if (isGrounded)
     {
         isCharging = true;
-        agent.isStopped = true;
-
         yield return new WaitForSeconds(chargeUpTime);
 
-        // Face the player directly before jumping
-        transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
-
-        // Jump towards the player
-        rb.AddRelativeForce(jumpForce, ForceMode.Impulse);
+        Vector3 direction = (player.position - transform.position).normalized;
+        rb.AddForce(new Vector3(direction.x, 1, direction.z) * jumpForce.magnitude, ForceMode.Impulse);
 
         isCharging = false;
         isJumping = true;
+        isGrounded = false; // Enemy is no longer grounded as it has jumped
 
-        // Wait for a bit after the jump to resume normal behavior
-        yield return new WaitForSeconds(2f);
-        isJumping = false;
+        yield return new WaitForSeconds(2f); // Time for the enemy to land and resume normal behavior
     }
+}
+
 
     void OnCollisionEnter(Collision collision)
     {
+        // Resetting the velocity upon collision to stop sliding
         if (collision.gameObject.CompareTag("Ground"))
-        {
-            // This helps in quick recovery and resumption of normal behavior after being affected by external forces.
-            rb.velocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-        }
-    
-        if (collision.gameObject.CompareTag("Player")) // Check if the collided object is the Player
-        {
-            // You can apply force, damage, or any other effect upon collision with the player here
-            var playerRb = collision.gameObject.GetComponent<Rigidbody>();
-            if (playerRb != null)
-            {
-                // Apply an impact force to the player
-                Vector3 forceDirection = collision.contacts[0].point - transform.position;
-                forceDirection = -forceDirection.normalized; // Invert direction for pushing away
-                playerRb.AddForce(forceDirection * impactForce, ForceMode.Impulse);
-            }
+    {
+        isGrounded = true;
+        isJumping = false; // Enemy has landed and can jump again
+    }
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
 
-            // Apply damage to the player (assuming the player has a method to take damage)
+        if (collision.gameObject.CompareTag("Player"))
+        {
             PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
             if (playerHealth != null)
             {
                 playerHealth.TakeDamage(damage);
             }
+        }
 
-            // Optional: Destroy or disable the enemy upon impact
-            // Destroy(gameObject); // Uncomment to destroy the enemy on impact
+        // Ensure the enemy can jump again after landing
+        if (collision.gameObject.CompareTag("Ground") && isJumping)
+        {
+            isJumping = false;
         }
     }
-
+    void OnCollisionExit(Collision collision)
+{
+    if (collision.gameObject.CompareTag("Ground"))
+    {
+        isGrounded = false; // Enemy is no longer in contact with the ground
+    }
+}
     public void OnDefeat()
     {
-        // Other defeat logic...
         FindObjectOfType<LevelManager>().EnemyDefeated();
     }
-    
 }
-
