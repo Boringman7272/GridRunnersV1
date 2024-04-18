@@ -4,7 +4,21 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System;
+using System.IO;
 
+[Serializable]
+public class PlayerTimeEntry
+{
+    public string playerName;
+    public float time;
+    public int levelNumber; 
+}
+
+[Serializable]
+public class PlayerTimeList
+{
+    public List<PlayerTimeEntry> playerTimes = new List<PlayerTimeEntry>();
+}
 
 public class LevelManager : MonoBehaviour
 {
@@ -17,7 +31,7 @@ public class LevelManager : MonoBehaviour
     public GameObject otherUIElements;
     public TextMeshProUGUI completionTimeText;
     public TextMeshProUGUI playerNameText;
-    public int LevelNumber = 1; 
+    public int levelNumber = 1; 
     public string playerName = "SNOWY";
     public GameObject gameplayUI;
     public GameObject EntryPrefab; // Assign in the inspector
@@ -26,9 +40,15 @@ public class LevelManager : MonoBehaviour
     public GameObject completionPopup;
     private List<float> levelTimes = new List<float>();
     private List<string> levelNames = new List<string>();
+    private string filePath;
+    private PlayerTimeList playerTimes = new PlayerTimeList();
+    public Transform timesListParent; // Parent for dynamically created time entries
+    public GameObject timeEntryPrefab;
 
     void Start()
     {
+        filePath = Path.Combine(Application.persistentDataPath, "playerTimes.json");
+        LoadTimes();
         StartLevel();
     }
 
@@ -38,40 +58,9 @@ public class LevelManager : MonoBehaviour
         startTime = Time.time; // Record the start time
     }
 
-    public void AddTimeToList(float time)
-    {
-        // Add time to the list
-        levelTimes.Add(time);
+    
 
-        // Instantiate a new time entry prefab and set it as a child of timeListParent
-        GameObject newTimeEntry = Instantiate(EntryPrefab, timelistParent);
-
-        // Get the Text component of the new entry and set its text to the formatted time
-        TextMeshProUGUI timeText = newTimeEntry.GetComponent<TextMeshProUGUI>();
-        if (timeText != null)
-        {
-            int minutes = Mathf.FloorToInt(time / 60F);
-            int seconds = Mathf.FloorToInt(time % 60);
-            timeText.text = string.Format("{0:0}:{1:00}", minutes, seconds);
-        }
-    }
-
-    public void AddNameToList(string name)
-    {
-        // Add Name to the list
-        
-        levelNames.Add(name);
-
-        // Instantiate a new name entry prefab and set it as a child of playerlistParent
-        GameObject newNameEntry = Instantiate(EntryPrefab, playerlistParent);
-
-        // Get the Text component of the new entry and set its text to the formatted time
-        TextMeshProUGUI nameText = newNameEntry.GetComponent<TextMeshProUGUI>();
-        if (nameText != null)
-        {
-            nameText.text = $"Player: {PlayerPrefs.GetString("PlayerName", "Default")}";;
-        }
-    }
+    
 
     void Update()
     {
@@ -102,52 +91,63 @@ public class LevelManager : MonoBehaviour
 
     public void CompleteLevel()
     {
-        Debug.Log("Level completed, showing scoreboard.");
+        
         HideOtherUI(); // Hide all other UI elements
+        elapsedTime = Time.time - startTime;
+        playerTimes.playerTimes.Add(new PlayerTimeEntry { playerName = playerName, time = elapsedTime });
+        SaveTimes();
+        SavePlayerTime(elapsedTime);
+        ShowScoreboard();
         SlowDownGame();
-        levelCompleted = true; // Mark level as completed to stop the timer
-        elapsedTime = Time.time - startTime; // Final time calculation
-        name = $"Player: {PlayerPrefs.GetString("PlayerName", "Default")}";
-        AddTimeToList(elapsedTime);
-        AddNameToList(PlayerPrefs.GetString("PlayerName", "Default"));
-        ShowScoreboard(elapsedTime); // Display the scoreboard
-        Debug.Log("Scoreboard shown should be called");
+        levelCompleted = true;
     }
 
-    public void ShowScoreboard(float time)
-    {
-        Debug.Log("Sscoreboard called");
-        Cursor.visible = true;
+    private void ShowScoreboard()
+{
 
-        // Unlock the cursor, allowing the player to move it freely
-        Cursor.lockState = CursorLockMode.None;
-        //int minutes = Mathf.FloorToInt(time / 60F);
-        //int seconds = Mathf.FloorToInt(time - minutes * 60);
-        //string formattedTime = string.Format("{0:0}:{1:00}", minutes, seconds);
-
-        //completionTimeText.text = $"Time: {formattedTime}";
-        //playerNameText.text = $"Player: {PlayerPrefs.GetString("PlayerName", "Default")}";
+     Cursor.visible = true;  // Make the cursor visible
+    Cursor.lockState = CursorLockMode.None;
     
-        scoreboardPanel.SetActive(true);
-    }
-    public void SaveLevelTime(float time, int levelNumber)
+    int currentLevel = levelNumber; // Current level identifier
+    foreach (Transform child in timesListParent.transform)
     {
-        PlayerPrefs.SetFloat($"Level{levelNumber}Time", time);
-        // Assuming you have some way to set or get the playerName
-        PlayerPrefs.SetString("PlayerName", playerName);
+        Destroy(child.gameObject); // Clear previous entries
     }
 
-    public void LoadLevelTime(int levelNumber)
+    foreach (var entry in playerTimes.playerTimes)
     {
-        float levelTime = PlayerPrefs.GetFloat($"Level{LevelNumber}Time", 0);
-        string playerName = PlayerPrefs.GetString("PlayerName", "DefaultPlayer");
-        // Use these values to display on the UI or for other logic
+        if (entry.levelNumber == currentLevel)  // Filter to show only current level times
+        {
+            GameObject go = Instantiate(timeEntryPrefab, timesListParent);
+            go.GetComponent<TextMeshProUGUI>().text = $"{entry.playerName}: {entry.time:0.00} (Level {entry.levelNumber})";
+        }
     }
 
-    public void SetPlayerName(string name)
+    scoreboardPanel.SetActive(true);
+}
+
+
+     private void LoadTimes()
     {
-        PlayerPrefs.SetString("PlayerName", name);
+        if (File.Exists(filePath))
+        {
+            string json = File.ReadAllText(filePath);
+            playerTimes = JsonUtility.FromJson<PlayerTimeList>(json);
+        }
     }
+
+    private void SaveTimes()
+    {
+        string json = JsonUtility.ToJson(playerTimes);
+        File.WriteAllText(filePath, json);
+    }
+    
+
+    public void SetPlayerName(string newName)
+    {
+        playerName = newName;
+    }
+
     public void HideOtherUI()
     {
         gameplayUI.SetActive(false);
@@ -173,7 +173,7 @@ public class LevelManager : MonoBehaviour
 public void RestartLevelOrGoToNext()
 {
     Time.timeScale = 1; // Resume normal game speed
-    // Your code to restart the level or go to the next one
+    
 }
 private void completePopup(){
     
@@ -183,6 +183,28 @@ private void completePopup(){
 
 
 }
+public void SavePlayerTime(float time)
+{
+    string playerName = PlayerPrefs.GetString("PlayerName", "DefaultPlayer");
+    int currentLevel = levelNumber; // Assume this is set based on the level being played
+    SaveToJson(playerName, time, currentLevel);
+}
+
+
+private void SaveToJson(string playerName, float time, int levelNumber)
+{
+    PlayerTimeEntry newEntry = new PlayerTimeEntry
+    {
+        playerName = playerName,
+        time = time,
+        levelNumber = levelNumber  // Save level number with the time entry
+    };
+
+    playerTimes.playerTimes.Add(newEntry);
+    string json = JsonUtility.ToJson(playerTimes);
+    File.WriteAllText(filePath, json);
+}
+
 
 public void GoToMenu()
     {

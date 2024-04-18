@@ -13,3 +13,4 @@ public class PlayerTimeList
 {
     public List<PlayerTimeEntry> playerTimes = new List<PlayerTimeEntry>();
 }
+
