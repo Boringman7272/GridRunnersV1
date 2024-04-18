@@ -29,6 +29,10 @@ public class MenuManager : MonoBehaviour
     {
         SceneManager.LoadScene("Dev"); // Replace "Dev" with the exact name of your scene
     }
+    public void StartLevelOne()
+    {
+        SceneManager.LoadScene("Level1"); // Replace "Dev" with the exact name of your scene
+    }
 
     public void ExitGame()
     {
