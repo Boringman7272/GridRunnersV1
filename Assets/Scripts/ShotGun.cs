@@ -18,7 +18,7 @@ public class ShotGun : Gun
     {
         maxAmmo = 8;
         base.Start();
-        GunTransform.localRotation = Quaternion.Euler(180, 0, 270);
+        GunTransform.localRotation = Quaternion.Euler(0, 180, 0);
     }
 
     protected override void Update()
@@ -102,7 +102,7 @@ public class ShotGun : Gun
         GunTransform.rotation = Quaternion.Slerp(GunTransform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
         
-        GunTransform.localRotation *= Quaternion.Euler(180, 0, 270);
+        GunTransform.localRotation *= Quaternion.Euler(0, 180, 0);
 }
     protected override void Shoot()
     {
