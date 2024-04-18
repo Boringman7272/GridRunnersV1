@@ -7,7 +7,7 @@ public class Ranger : MonoBehaviour
     public Transform firePoint; // The point from where the projectiles are shot
     public float shootInterval = 2f; // Time between each shot
     public float coneAngle = 30f;
-    private float shootingRange = 300f;  // Maximum deviation angle from the forward direction for the projectiles
+    public float shootingRange = 300f;  // Maximum deviation angle from the forward direction for the projectiles
 
     private float shootTimer = 0f; // Timer to keep track of shooting cooldown
 

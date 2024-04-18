@@ -23,6 +23,7 @@ public class LevelManager : MonoBehaviour
     public GameObject EntryPrefab; // Assign in the inspector
     public Transform playerlistParent; // Parent GameObject where time entries will be added
     public Transform timelistParent;
+    public GameObject completionPopup;
     private List<float> levelTimes = new List<float>();
     private List<string> levelNames = new List<string>();
 
@@ -83,6 +84,9 @@ public class LevelManager : MonoBehaviour
     public void EnemyDefeated()
     {
         activeEnemies--;
+        if (activeEnemies <= 0){
+            completePopup();
+        }
         CheckLevelCompletion();
     }
 
@@ -170,6 +174,14 @@ public void RestartLevelOrGoToNext()
 {
     Time.timeScale = 1; // Resume normal game speed
     // Your code to restart the level or go to the next one
+}
+private void completePopup(){
+    
+    
+    completionPopup.SetActive(true); // Show the popup
+            
+
+
 }
 
 public void GoToMenu()

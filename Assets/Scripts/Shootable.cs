@@ -8,8 +8,10 @@ public class Shootable : MonoBehaviour
     public float health = 100f;
     public GameObject damageNumberPrefab;  
     public Transform canvasTransform;
+     private bool isDead = false; 
     public void TakeDamage(float damage)
     {
+        if (isDead) return;
         health -= damage;
        
 
@@ -21,6 +23,7 @@ public class Shootable : MonoBehaviour
         }
         else if (health <= 0)
         {
+            isDead = true; 
             Die(); // Normal death for non-exploding objects
         }
 
@@ -30,29 +33,10 @@ public class Shootable : MonoBehaviour
 {
     
     // Get the FloatingEnemy component from the same GameObject
-    FloatingEnemy floatingEnemy = GetComponent<FloatingEnemy>();
-    GroundEnemy groundEnemy = GetComponent<GroundEnemy>();
-    Ranger ranger = GetComponent<Ranger>();
-    
-    // Check if the component exists to avoid null reference errors
-    if (floatingEnemy != null)
-    {
-        // Call the OnDefeat method or any relevant method on the FloatingEnemy script
-        floatingEnemy.OnDefeat();
-    }
-    if (groundEnemy != null)
-    {
-        // Call the OnDefeat method or any relevant method on the FloatingEnemy script
-        groundEnemy.OnDefeat();
-    }
-    if (ranger != null)
-    {
-        // Call the OnDefeat method or any relevant method on the FloatingEnemy script
-        ranger.OnDefeat();
-    }
-    
+    FindObjectOfType<LevelManager>().EnemyDefeated();
     // Destroy the GameObject
     Destroy(gameObject);
+    
 }
 
     private void ShowDamageNumber(float damage)
