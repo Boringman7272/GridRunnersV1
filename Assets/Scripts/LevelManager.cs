@@ -44,10 +44,12 @@ public class LevelManager : MonoBehaviour
     private PlayerTimeList playerTimes = new PlayerTimeList();
     public Transform timesListParent; // Parent for dynamically created time entries
     public GameObject timeEntryPrefab;
+    public AudioSource audioSource;
 
     void Start()
     {
         filePath = Path.Combine(Application.persistentDataPath, "playerTimes.json");
+        audioSource = GetComponent<AudioSource>();
         LoadTimes();
         StartLevel();
     }
@@ -72,6 +74,7 @@ public class LevelManager : MonoBehaviour
     }
     public void EnemyDefeated()
     {
+        audioSource.Play();
         activeEnemies--;
         if (activeEnemies <= 0){
             completePopup();

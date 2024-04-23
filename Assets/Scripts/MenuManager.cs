@@ -49,6 +49,10 @@ public class MenuManager : MonoBehaviour
     {
         SceneManager.LoadScene("Level2"); 
     }
+    public void StartLevelThree()
+    {
+        SceneManager.LoadScene("Level3"); 
+    }
 
     public void ExitGame()
     {

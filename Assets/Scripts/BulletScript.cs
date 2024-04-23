@@ -23,7 +23,7 @@ public class BulletScript : MonoBehaviour
             Shootable shootable = collision.collider.GetComponent<Shootable>();
     if (shootable != null)
     {
-        // Assuming each bullet does a fixed amount of damage
+        
         shootable.TakeDamage(ARbulletdmg);
     }
         GameObject explosion = Instantiate(explosionEffect, transform.position, Quaternion.identity);

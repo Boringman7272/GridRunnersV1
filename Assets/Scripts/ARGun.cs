@@ -14,9 +14,6 @@ public class ARGun : Gun
     private int shotsFiredInBurst = 0; // Shots fired in the current burst
     private float lastBurstShotTime; 
     public AudioSource audioSource;
-    
-    
-    //private bool gunEnabled = false;
 
     protected override void Start()
     {
@@ -31,10 +28,11 @@ public class ARGun : Gun
         {
         Aiming();
         }
+        //Gun State machine
         switch (state)
         {
             case GunState.Ready:
-                if (!isReloading) // Add this check to prevent shooting while reloading
+                if (!isReloading) 
                 {
                 HandleShooting();
                 }
@@ -116,6 +114,7 @@ public class ARGun : Gun
     }
     private void AltShoot()
     {
+        audioSource.Play();
         Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
         currentAmmo--;
         
@@ -134,7 +133,7 @@ public class ARGun : Gun
             else
             {
                 lastBurstShotTime = Time.time;
-                shotsFiredInBurst = 0; // Reset burst counter after completing a burst
+                shotsFiredInBurst = 0; 
             }
         }
     }
