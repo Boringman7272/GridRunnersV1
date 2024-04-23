@@ -91,7 +91,8 @@ public class LevelManager : MonoBehaviour
 
     public void CompleteLevel()
     {
-        
+        if(levelCompleted == false){
+        levelCompleted = true;
         HideOtherUI(); // Hide all other UI elements
         elapsedTime = Time.time - startTime;
         playerTimes.playerTimes.Add(new PlayerTimeEntry { playerName = playerName, time = elapsedTime });
@@ -100,12 +101,13 @@ public class LevelManager : MonoBehaviour
         ShowScoreboard();
         SlowDownGame();
         levelCompleted = true;
+        }
     }
 
     private void ShowScoreboard()
 {
 
-     Cursor.visible = true;  // Make the cursor visible
+    Cursor.visible = true;  // Make the cursor visible
     Cursor.lockState = CursorLockMode.None;
     
     int currentLevel = levelNumber; // Current level identifier
@@ -208,7 +210,10 @@ private void SaveToJson(string playerName, float time, int levelNumber)
 
 public void GoToMenu()
     {
+        
         SceneManager.LoadScene("Menus"); // Replace "Dev" with the exact name of your scene
+        Cursor.visible = true;  // Make the cursor visible
+        Cursor.lockState = CursorLockMode.None;
     }
 
 
