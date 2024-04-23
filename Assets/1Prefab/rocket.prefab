@@ -106,8 +106,8 @@ MonoBehaviour:
   explosionEffect: {fileID: 7904648201882189945, guid: 80bf12f5281f15c4fa900d475b32b7f9, type: 3}
   rocketTrailEffect: {fileID: 5322482516583575462, guid: 6d704fc1bcac3f847b40aa1f78e9800d, type: 3}
   lifespan: 10
-  explosionForce: 500
-  rocketDamage: 50
+  explosionForce: 350
+  rocketDamage: 100
   explosionRadius: 5
   rocketTrail: {fileID: 1597336374437393069}
   redMaterial: {fileID: 2100000, guid: 4904e7a591bbf6a4798bb5e671fc3966, type: 2}

@@ -15,19 +15,39 @@ public class MenuManager : MonoBehaviour
 
     public void ShowMainMenu()
     {
+        Cursor.visible = true;  // Make the cursor visible
+        Cursor.lockState = CursorLockMode.None;
         mainMenu.SetActive(true);
         levelSelectionMenu.SetActive(false);
+        
     }
 
     public void ShowLevelSelectionMenu()
     {
+        Cursor.visible = true;  // Make the cursor visible
+        Cursor.lockState = CursorLockMode.None;
         mainMenu.SetActive(false);
         levelSelectionMenu.SetActive(true);
+        
     }
 
     public void StartDevLevel()
     {
-        SceneManager.LoadScene("Dev"); // Replace "Dev" with the exact name of your scene
+        SceneManager.LoadScene("Dev"); 
+    }
+    public void StartMenus()
+    {
+        SceneManager.LoadScene("Menus"); 
+        Cursor.visible = true;  // Make the cursor visible
+        Cursor.lockState = CursorLockMode.None;
+    }
+    public void StartLevelOne()
+    {
+        SceneManager.LoadScene("Level1"); 
+    }
+    public void StartLevelTwo()
+    {
+        SceneManager.LoadScene("Level2"); 
     }
 
     public void ExitGame()

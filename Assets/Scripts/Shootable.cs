@@ -8,8 +8,10 @@ public class Shootable : MonoBehaviour
     public float health = 100f;
     public GameObject damageNumberPrefab;  
     public Transform canvasTransform;
+     private bool isDead = false; 
     public void TakeDamage(float damage)
     {
+        if (isDead) return;
         health -= damage;
        
 
@@ -21,16 +23,21 @@ public class Shootable : MonoBehaviour
         }
         else if (health <= 0)
         {
+            isDead = true; 
             Die(); // Normal death for non-exploding objects
         }
 
     }
 
     private void Die()
-    {
-        // Add logic for what happens when the object is destroyed
-        Destroy(gameObject);
-    }
+{
+    
+    // Get the FloatingEnemy component from the same GameObject
+    FindObjectOfType<LevelManager>().EnemyDefeated();
+    // Destroy the GameObject
+    Destroy(gameObject);
+    
+}
 
     private void ShowDamageNumber(float damage)
     {

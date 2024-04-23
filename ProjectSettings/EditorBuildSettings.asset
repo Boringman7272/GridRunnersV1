@@ -8,8 +8,17 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Menus.unity
     guid: 59546b2a05beb824aa250af9faca0b24
-  - enabled: 1
+  - enabled: 0
     path: Assets/Dev.unity
     guid: 51b49e1226ededc44a4b1617d90648b2
+  - enabled: 0
+    path: Assets/dev2.unity
+    guid: a504740e009b0e947b56a10a48b13ae8
+  - enabled: 1
+    path: Assets/Level2.unity
+    guid: bce6f9cf695053140b4dde44363175ef
+  - enabled: 1
+    path: Assets/Level1.unity
+    guid: 5e39fafd9fb293a4a846f8a2ddfa4482
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 9e7be553448fa2546aea5752021cbcf7, type: 2}

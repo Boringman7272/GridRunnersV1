@@ -108,7 +108,7 @@ if (!isDashing) // Only move normally if not in a dash
     {
         if (collision.gameObject.CompareTag("Player")) // Check if the collided object is the Player
         {
-            // You can apply force, damage, or any other effect upon collision with the player here
+            
             var playerRb = collision.gameObject.GetComponent<Rigidbody>();
             if (playerRb != null)
             {
@@ -125,8 +125,7 @@ if (!isDashing) // Only move normally if not in a dash
                 playerHealth.TakeDamage(damage);
             }
 
-            // Optional: Destroy or disable the enemy upon impact
-            // Destroy(gameObject); // Uncomment to destroy the enemy on impact
+            
         }
     }
     IEnumerator DashTimer()
@@ -155,5 +154,11 @@ if (!isDashing) // Only move normally if not in a dash
         yield return new WaitForSeconds(0.5f); // Duration of the dash effect
 
         isDashing = false; // Reset dashing state
+    }
+
+    public void OnDefeat()
+    {
+        
+        FindObjectOfType<LevelManager>().EnemyDefeated();
     }
 }

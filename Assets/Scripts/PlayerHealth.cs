@@ -2,6 +2,8 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -64,8 +66,19 @@ public class PlayerHealth : MonoBehaviour
 
     private void Die()
     {
-        // Add logic for what happens when the player dies
         Debug.Log("Player died!");
+        StartCoroutine(HandleDeath());
+    }
+
+    private IEnumerator HandleDeath()
+    {
+        // Optionally add a delay to show a death animation or a fade out
+        yield return new WaitForSeconds(2); // Wait for 2 seconds before changing the scene
+
+        // Load the main menu scene
+        SceneManager.LoadScene("Menus");
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
     
     private void UpdateHealthUI()

@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - Projectile
+  - Enemies
+  - FxTemporaire
+  - CinemachineTarget
+  - ScoreboardPanel
+  - Ground
   layers:
   - Default
   - TransparentFX
